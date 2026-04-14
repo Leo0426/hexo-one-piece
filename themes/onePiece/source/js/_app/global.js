@@ -21,6 +21,7 @@ var headerHightInner = APP.state.headerHightInner;
 var headerHight = APP.state.headerHight;
 var oWinHeight = APP.state.viewport.height;
 var oWinWidth = APP.state.viewport.width;
+var sidebarNaturalHeight = APP.state.sidebarNaturalHeight || 0;
 var LOCAL_HASH = APP.state.navigation.localHash;
 var LOCAL_URL = APP.state.navigation.localUrl;
 var pjax = APP.state.navigation.pjax;
@@ -52,10 +53,22 @@ const syncGlobalState = function() {
   APP.state.headerHight = headerHight;
   APP.state.viewport.height = oWinHeight;
   APP.state.viewport.width = oWinWidth;
+  APP.state.sidebarNaturalHeight = sidebarNaturalHeight;
   APP.state.navigation.localHash = LOCAL_HASH;
   APP.state.navigation.localUrl = LOCAL_URL;
   APP.state.navigation.pjax = pjax;
 };
+
+const rememberSidebarNaturalHeight = function () {
+  if (!sideBar || document.body.offsetWidth <= 991)
+    return 0;
+
+  if (!sideBar.hasClass('affix')) {
+    sidebarNaturalHeight = Math.ceil(sideBar.offsetHeight || 0);
+  }
+
+  return sidebarNaturalHeight;
+}
 
 const Loader = {
   timer: null,
@@ -310,11 +323,17 @@ const updateSidebarAffix = function () {
     return;
 
   var navOffset = 0;
+  var main = $('#main');
+  var mainHeight = main ? Math.ceil(main.offsetHeight || 0) : 0;
+  var naturalHeight = rememberSidebarNaturalHeight();
   if (siteNav && siteNav.hasClass('show') && !siteNav.hasClass('down')) {
     navOffset = siteNavHeight || siteNav.height() || 0;
   }
 
-  var shouldAffix = window.pageYOffset >= Math.max(headerHight - navOffset, 0) && document.body.offsetWidth > 991;
+  var shouldAffix = window.pageYOffset >= Math.max(headerHight - navOffset, 0)
+    && document.body.offsetWidth > 991
+    && mainHeight > naturalHeight;
+
   if (sideBar.hasClass('affix') !== shouldAffix) {
     sideBar.toggleClass('affix', shouldAffix);
   }
@@ -332,6 +351,7 @@ const resizeHandle = function (event) {
 
   oWinHeight = window.innerHeight;
   oWinWidth = window.innerWidth;
+  rememberSidebarNaturalHeight();
   syncGlobalState();
   syncSidebarHeight();
 }

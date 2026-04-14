@@ -1,6 +1,7 @@
 ---
-title: 经济机器是怎样运行的？
+title: 读《经济机器是怎样运行的？Ray Dalio》
 date: 2026-04-09 17:49:32
+cover: images/article/economy.jpg
 categories:
   - 阅读笔记
 tags:

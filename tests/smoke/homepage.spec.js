@@ -1,7 +1,6 @@
 const { test, expect } = require('@playwright/test');
 
 const homePath = '/';
-const postPath = '/2026/04/07/security-incident-drill/';
 
 const clearStoredTheme = async page => {
   await page.addInitScript(() => {
@@ -11,9 +10,26 @@ const clearStoredTheme = async page => {
   });
 };
 
+const waitForSiteReady = async page => {
+  await page.waitForFunction(() => document.body.classList.contains('loaded'));
+};
+
+const getFirstPostPath = async page => {
+  const href = await page.locator('.segments.posts .item .btn').first().getAttribute('href');
+  expect(href).toBeTruthy();
+  return href;
+};
+
+const getFirstPostTitle = async page => {
+  const title = await page.locator('.segments.posts .item h3 a').first().textContent();
+  expect(title).toBeTruthy();
+  return title.trim();
+};
+
 test.describe('homepage smoke', () => {
   test('homepage renders hero and sidebar without footer overlap', async ({ page }) => {
     await page.goto(homePath, { waitUntil: 'networkidle' });
+    await waitForSiteReady(page);
 
     await expect(page.locator('#imgs')).toBeVisible();
     await expect(page.locator('#sidebar .author')).toBeVisible();
@@ -29,7 +45,28 @@ test.describe('homepage smoke', () => {
     expect(Math.round(sidebarBox.y + sidebarBox.height)).toBeLessThanOrEqual(Math.round(footerBox.y + 2));
   });
 
+  test('homepage keeps scroll height stable when sidebar is taller than the post list', async ({ page }) => {
+    await page.goto(homePath, { waitUntil: 'networkidle' });
+    await waitForSiteReady(page);
+
+    const samples = [];
+    for (const y of [0, 300, 500, 620, 900]) {
+      await page.evaluate(scrollTop => window.scrollTo(0, scrollTop), y);
+      await page.waitForTimeout(200);
+      samples.push(await page.evaluate(() => ({
+        scrollHeight: document.body.scrollHeight,
+        sidebarClass: document.querySelector('#sidebar')?.className || ''
+      })));
+    }
+
+    const scrollHeights = [...new Set(samples.map(sample => sample.scrollHeight))];
+    expect(scrollHeights).toHaveLength(1);
+    expect(samples.every(sample => !sample.sidebarClass.includes('affix'))).toBeTruthy();
+  });
+
   test('post page sidebar tabs switch between overview, related, and contents', async ({ page }) => {
+    await page.goto(homePath, { waitUntil: 'networkidle' });
+    const postPath = await getFirstPostPath(page);
     await page.goto(postPath, { waitUntil: 'networkidle' });
 
     const tabs = page.locator('#sidebar .tab .item');
@@ -99,20 +136,25 @@ test.describe('homepage smoke', () => {
 
   test('local search fallback returns results and can be closed', async ({ page }) => {
     await page.goto(homePath, { waitUntil: 'networkidle' });
+    await waitForSiteReady(page);
+    const firstPostTitle = await getFirstPostTitle(page);
+    const query = firstPostTitle.slice(0, Math.min(4, firstPostTitle.length));
 
     await page.locator('#nav .right .item.search').click();
     const searchInput = page.locator('#search .search-input');
     await expect(searchInput).toBeVisible();
 
-    await searchInput.fill('安全');
-    await expect(page.locator('#search-hits .item')).toHaveCount(1);
-    await expect(page.locator('#search-hits .item')).toContainText('一次安全应急演练应该怎样复盘');
+    await searchInput.fill(query);
+    await expect(page.locator('#search-hits .item').first()).toBeVisible();
+    await expect(page.locator('#search-hits .item').first()).toContainText(firstPostTitle);
 
     await page.locator('#search .close-btn').click();
     await expect(page.locator('#search')).toBeHidden();
   });
 
   test('comments disabled state is rendered on post pages', async ({ page }) => {
+    await page.goto(homePath, { waitUntil: 'networkidle' });
+    const postPath = await getFirstPostPath(page);
     await page.goto(postPath, { waitUntil: 'networkidle' });
 
     await expect(page.locator('#comments .comments-disabled')).toBeVisible();
@@ -121,10 +163,12 @@ test.describe('homepage smoke', () => {
 
   test('pjax navigation keeps sidebar and menu state consistent', async ({ page }) => {
     await page.goto(homePath, { waitUntil: 'networkidle' });
+    await waitForSiteReady(page);
     const initialMenuCount = await page.locator('#nav .menu > .item').count();
+    const postPath = await getFirstPostPath(page);
 
     await page.locator('.segments.posts .item:first-child .btn').click();
-    await page.waitForURL('**/2026/04/09/hello-world/');
+    await page.waitForURL(`**${postPath}`);
     await expect(page.locator('#sidebar .tab .item')).toHaveCount(3);
     await expect(page.locator('#nav .menu > .item')).toHaveCount(initialMenuCount);
 
