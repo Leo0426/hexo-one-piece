@@ -1,9 +1,6 @@
-/* global hexo */
-
 'use strict';
 
-const path = require('path');
-const url = require('url');
+const { getHostname } = require('../utils/url');
 
 const fmtNum = num => {
   return num < 10 ? '0' + num : num;
@@ -11,7 +8,7 @@ const fmtNum = num => {
 
 
 hexo.extend.filter.register('template_locals', locals => {
-  const { env, config } = hexo;
+  const { config } = hexo;
   const { __, theme } = locals;
   const { i18n } = hexo.theme;
 
@@ -30,7 +27,7 @@ hexo.extend.filter.register('template_locals', locals => {
   locals.languages = [...i18n.languages];
   locals.languages.splice(locals.languages.indexOf('default'), 1);
   locals.page.lang = locals.page.lang || locals.page.language;
-  locals.hostname = url.parse(config.url).hostname || config.url;
+  locals.hostname = getHostname(config.url);
 
   // Creative Commons
   locals.ccURL = 'https://creativecommons.org/' + (theme.creative_commons.license === 'zero' ? 'publicdomain/zero/1.0/' : 'licenses/' + theme.creative_commons.license + '/4.0/') + (theme.creative_commons.language || '');

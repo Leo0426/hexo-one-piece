@@ -1,12 +1,8 @@
-/* global hexo */
-
 'use strict';
 
 const { htmlTag, url_for } = require('hexo-util');
-const url = require('url');
 const crypto = require('crypto');
-const fs = require('fs');
-const path = require('path');
+const { isExternalUrl } = require('../utils/url');
 
 const randomServer = parseInt(Math.random()*4,10)+1
 
@@ -14,8 +10,8 @@ const randomBG = function(count = 1, image_server = null, image_list = []) {
   if (image_server) {
     if(count && count > 1) {
       var arr = new Array(count);
-      for(var i=0; i < arr.length; i++){
-        arr[i] = image_server + '?' + Math.floor(Math.random() * 999999)
+      for(var serverIndex = 0; serverIndex < arr.length; serverIndex++){
+        arr[serverIndex] = image_server + '?' + Math.floor(Math.random() * 999999)
       }
 
       return arr;
@@ -25,7 +21,7 @@ const randomBG = function(count = 1, image_server = null, image_list = []) {
   }
 
   var parseImage = function(img, size) {
-    if (img.startsWith('//') || img.startsWith('http')) {
+    if (img.startsWith('/') || img.startsWith('//') || img.startsWith('http')) {
       return img
     } else {
       return 'https://tva'+randomServer+'.sinaimg.cn/'+size+'/'+img
@@ -33,12 +29,12 @@ const randomBG = function(count = 1, image_server = null, image_list = []) {
   }
 
   if(count && count > 1) {
-    var shuffled = image_list.slice(0), i = image_list.length, min = i - count, temp, index;
-    while (i-- > min) {
-      index = Math.floor((i + 1) * Math.random());
+    var shuffled = image_list.slice(0), cursor = image_list.length, min = cursor - count, temp, index;
+    while (cursor-- > min) {
+      index = Math.floor((cursor + 1) * Math.random());
       temp = shuffled[index];
-      shuffled[index] = shuffled[i];
-      shuffled[i] = temp;
+      shuffled[index] = shuffled[cursor];
+      shuffled[cursor] = temp;
     }
 
     return shuffled.slice(min).map(function(img) {
@@ -54,8 +50,7 @@ hexo.extend.helper.register('_url', function(path, text, options = {}) {
     return
 
   const { config } = this;
-  const data = url.parse(path);
-  const siteHost = url.parse(config.url).hostname || config.url;
+  const isExternal = isExternalUrl(path, config.url);
 
   const theme = hexo.theme.config;
   let exturl = '';
@@ -63,7 +58,7 @@ hexo.extend.helper.register('_url', function(path, text, options = {}) {
   let attrs = { href: url_for.call(this, path) };
 
   // If `exturl` enabled, set spanned links only on external links.
-  if (theme.exturl && data.protocol && data.hostname !== siteHost) {
+  if (theme.exturl && isExternal) {
     tag = 'span';
     exturl = 'exturl';
     const encoded = Buffer.from(path).toString('base64');
@@ -91,7 +86,7 @@ hexo.extend.helper.register('_url', function(path, text, options = {}) {
   }
 
   // If it's external link, rewrite attributes.
-  if (data.protocol && data.hostname !== siteHost) {
+  if (isExternal) {
     attrs.external = null;
 
     if (!theme.exturl) {
@@ -119,7 +114,7 @@ hexo.extend.helper.register('_image_url', function(img, path = '') {
 })
 
 hexo.extend.helper.register('_cover', function(item, num) {
-  const { statics, js, image_server, image_list } = hexo.theme.config;
+  const { image_server, image_list } = hexo.theme.config;
 
   if(item.cover) {
     return this._image_url(item.cover, item.path)

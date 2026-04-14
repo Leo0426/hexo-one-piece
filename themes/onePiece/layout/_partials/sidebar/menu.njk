@@ -4,7 +4,23 @@
   {%- if not itemURL.startsWith('http') %}
     {%- set itemURL = itemURL | replace('//', '/') %}
   {%- endif %}
-  {%- set menuIcon = '<i class="ic i-' + path[1] | trim + '"></i>' %}
+  {%- set iconName = path[1] | trim %}
+  {%- set iconClass = 'ic i-' + iconName %}
+  {%- if iconName == 'home' %}
+    {%- set menuIcon = '<i class="ic menu__home-icon" aria-hidden="true"></i>' %}
+  {%- elif iconName == 'archive' %}
+    {%- set menuIcon = '<i class="ic menu__archives-icon" aria-hidden="true"></i>' %}
+  {%- elif iconName == 'th' %}
+    {%- set menuIcon = '<i class="ic menu__categories-icon" aria-hidden="true"></i>' %}
+  {%- elif iconName == 'tags' %}
+    {%- set menuIcon = '<i class="ic menu__tags-icon" aria-hidden="true"></i>' %}
+  {%- elif iconName == 'address-card' %}
+    {%- set menuIcon = '<i class="ic menu__about-icon" aria-hidden="true"></i>' %}
+  {%- elif iconName == 'friends' %}
+    {%- set menuIcon = '<i class="ic menu__friends-icon" aria-hidden="true"></i>' %}
+  {%- else %}
+    {%- set menuIcon = '<i class="' + iconClass + '"></i>' %}
+  {%- endif %}
   {%- set menuText = __('menu.' + name) | replace('menu.', '') %}
   {%- if parent %}
   <li class="item dropdown">

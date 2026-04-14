@@ -33,18 +33,45 @@
 #qr {
   padding-top: 1.25rem;
   display: none;
+  gap: 1.25rem;
+  justify-content: center;
+  align-items: flex-start;
+  flex-wrap: wrap;
 
   a {
     border: 0;
   }
 
+  > div {
+    width: 15.5rem;
+  }
+
   img {
-    display: inline-block;
-    max-width: 100%;
+    display: block;
+    width: 100%;
+    height: 15.5rem;
+    padding: .625rem;
+    border: .0625rem solid var(--grey-4);
+    border-radius: .75rem;
+    background: var(--grey-0);
+    object-fit: contain;
+    object-position: center;
+    box-shadow: 0 .5rem 1.1rem -.75rem var(--grey-9-a1);
+  }
+
+  +mobile() {
+    > div {
+      width: 13rem;
+    }
+
+    img {
+      height: 13rem;
+    }
   }
 
   p {
     text-align: center;
+    margin-top: .5rem;
   }
 
 }

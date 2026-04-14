@@ -4,6 +4,9 @@
   color: var(--grey-5);
   font-size: $font-size-small;
   background: var(--body-bg-shadow);
+  margin-top: -1px;
+  position: relative;
+  z-index: 1;
 
   .inner {
     margin: 0 auto;
@@ -35,7 +38,7 @@
 .status {
   width: 100%;
   text-align: center;
-  margin-top: 2rem;
+  margin-top: 5rem;
 }
 
 .languages {
@@ -61,6 +64,15 @@
   color: unquote(hexo-config('footer.icon.color'));
   display: inline-block;
   margin: 0 .3125rem 0 .125rem;
+
+  .i-ship-wheel:before {
+    background: url('../images/op-icons/ship-wheel.png') center / contain no-repeat;
+    content: '';
+    display: inline-block;
+    height: 1em;
+    vertical-align: -.12em;
+    width: 1em;
+  }
 }
 
 .powered-by, .theme-info {

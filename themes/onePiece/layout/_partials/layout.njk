@@ -7,25 +7,26 @@
 <head>
   {{ partial('_partials/head/head.njk', {}, {cache: true}) }}
   {{ partial('_partials/head/head_unique.njk') }}
-  <title>{% block title %}{% endblock %}{{ alternate + " = " if alternate }}{{ title }}{{ " = "+subtitle if subtitle }}</title>
+  <title>{% block title %}{% endblock %}{{ alternate + " | " if alternate }}{{ title }}</title>
 </head>
 <body itemscope itemtype="http://schema.org/WebPage">
-  <div id="loading">
-    <div class="cat">
-      <div class="body"></div>
-      <div class="head">
-        <div class="face"></div>
+  <div id="loading" aria-live="polite" aria-label="加载中">
+    <div class="loading__scene" role="status">
+      <div class="loading__figure" aria-hidden="true">
+        <img class="loading__image loading__image--first" src="{{ url_for(theme.statics + theme.images + '/luffy_hello_1.png') }}" alt="">
+        <img class="loading__image loading__image--second" src="{{ url_for(theme.statics + theme.images + '/luffy_hello_2.png') }}" alt="">
       </div>
-      <div class="foot">
-        <div class="tummy-end"></div>
-        <div class="bottom"></div>
-        <div class="legs left"></div>
-        <div class="legs right"></div>
-      </div>
-      <div class="paw">
-        <div class="hands left"></div>
-        <div class="hands right"></div>
-      </div>
+      <div class="loading__shadow" aria-hidden="true"></div>
+      <p class="loading__text" aria-label="加载中">
+        <span class="loading__letter" aria-hidden="true">加</span>
+        <span class="loading__letter" aria-hidden="true">载</span>
+        <span class="loading__letter" aria-hidden="true">中</span>
+        <span class="loading__dots" aria-hidden="true">
+          <i></i>
+          <i></i>
+          <i></i>
+        </span>
+      </p>
     </div>
   </div>
   <div id="container">
@@ -35,7 +36,7 @@
           <div class="pjax">
           {% block header %}
             <a href="{{ config.root }}" class="logo" rel="start">
-              {%- if alternate %}<p class="artboard">{{ alternate }}</p>{%- endif %}
+              {%- if alternate %}<p class="artboard">Hey One Piece</p>{%- endif %}
               <h1 itemprop="name headline" class="title">{{ title }}</h1>
             </a>
             {%- if subtitle %}
@@ -141,8 +142,6 @@
     ]
   };
 </script>
-
-<script src="https://cdn.polyfill.io/v2/polyfill.js"></script>
 
 {{ _vendor_js() }}
 

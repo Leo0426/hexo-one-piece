@@ -7,10 +7,14 @@
 
 
   .item {
+    align-items: center;
+    box-sizing: border-box;
     cursor: pointer;
     display: inline-flex;
     font-size: $font-size-small;
-    padding: .3125rem .9375rem;
+    justify-content: center;
+    min-width: 2.75rem;
+    padding: .375rem .875rem;
     color: var(--grey-5);
 
     border-radius: .625rem;
@@ -25,17 +29,31 @@
     }
 
     span {
-      display: none;
+      display: inline-block;
+      margin-left: 0;
+      max-width: 0;
+      opacity: 0;
+      overflow: hidden;
+      transform: translateX(-0.125rem);
+      transition: max-width .2s ease-out, opacity .18s ease-out, margin-left .2s ease-out, transform .2s ease-out;
+      white-space: nowrap;
       word-break: keep-all;
     }
 
     &.active span {
-      display: inherit;
+      margin-left: .375rem;
+      max-width: 6rem;
+      opacity: 1;
+      transform: translateX(0);
     }
 
     &:hover,
     &.active {
       @extend $color-btn;
+    }
+
+    &.active {
+      min-width: 7.25rem;
     }
 
 
@@ -44,6 +62,7 @@
     }
 
     &::before {
+      flex: 0 0 auto;
       font-family-icons();
     }
 
@@ -56,11 +75,16 @@
     }
 
     &.overview::before {
-      @extend .i-home:before;
+      content: '';
+      display: inline-block;
+      width: 1.2em;
+      height: 1.2em;
+      background: url('../images/op-text-icons/poneglyph.png') center / contain no-repeat;
+      flex: 0 0 auto;
     }
 
     &.active::before {
-      margin-right: .3125rem;
+      margin-right: 0;
     }
   }
 

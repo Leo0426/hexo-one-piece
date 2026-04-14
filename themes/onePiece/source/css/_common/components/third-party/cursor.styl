@@ -1,0 +1,159 @@
+@media (hover: hover) and (pointer: fine) {
+  html,
+  body {
+    cursor: url('../images/cursors/log-pose-cursor.png') 5 5, auto;
+  }
+
+  a,
+  button,
+  select,
+  summary,
+  label,
+  [role='button'],
+  [onclick],
+  .clickable,
+  .search,
+  .theme,
+  .toggle,
+  .close-btn,
+  .copy-btn,
+  .breakline-btn,
+  .fullscreen-btn,
+  .show-btn,
+  .pagination a,
+  .page-number,
+  .menu .item,
+  #quick .item,
+  #tool .item,
+  .tabs .nav li,
+  .quiz > p,
+  .quiz > ul.options li {
+    cursor: url('../images/cursors/log-pose-pointer.png') 5 5, pointer !important;
+  }
+
+  a:active,
+  button:active,
+  select:active,
+  summary:active,
+  label:active,
+  [role='button']:active,
+  [onclick]:active,
+  .clickable:active,
+  .search:active,
+  .theme:active,
+  .toggle:active,
+  .close-btn:active,
+  .copy-btn:active,
+  .breakline-btn:active,
+  .fullscreen-btn:active,
+  .show-btn:active,
+  .pagination a:active,
+  .page-number:active,
+  .menu .item:active,
+  #quick .item:active,
+  #tool .item:active,
+  .tabs .nav li:active,
+  .quiz > p:active,
+  .quiz > ul.options li:active {
+    cursor: url('../images/cursors/log-pose-active.png') 6 6, pointer !important;
+  }
+
+  [draggable='true'],
+  .draggable,
+  .dragging,
+  .progress,
+  .bar,
+  .playlist .current {
+    cursor: url('../images/cursors/log-pose-grab.png') 5 5, grab !important;
+  }
+
+  [draggable='true']:active,
+  .draggable:active,
+  .dragging,
+  .progress:active,
+  .bar:active,
+  .playlist .current:active {
+    cursor: url('../images/cursors/log-pose-active.png') 6 6, grabbing !important;
+  }
+
+  input[type='text'],
+  input[type='search'],
+  input[type='email'],
+  input[type='password'],
+  input[type='url'],
+  input[type='number'],
+  input:not([type]),
+  textarea,
+  [contenteditable='true'] {
+    cursor: text !important;
+  }
+
+  button:disabled,
+  input:disabled,
+  select:disabled,
+  textarea:disabled,
+  [disabled],
+  .disabled,
+  .disabled-item {
+    cursor: not-allowed !important;
+  }
+
+  .medium-zoom-image,
+  .fancybox,
+  [data-fancybox] {
+    cursor: url('../images/cursors/log-pose-pointer.png') 5 5, zoom-in !important;
+  }
+
+  body:not(.loaded),
+  body:not(.loaded) *,
+  body.pace-running,
+  body.pace-running *,
+  html.pace-running,
+  html.pace-running *,
+  .pace-running,
+  .pace-running *,
+  .loading,
+  .loading *,
+  [aria-busy='true'],
+  [aria-busy='true'] * {
+    cursor: none !important;
+  }
+
+  .op-cursor-wait {
+    height: 2rem;
+    left: 0;
+    opacity: 0;
+    pointer-events: none;
+    position: fixed;
+    top: 0;
+    transform: translate3d(-999px, -999px, 0);
+    transition: opacity .16s ease;
+    width: 2rem;
+    z-index: 10000000;
+
+    span {
+      animation: op-cursor-wheel-spin .78s linear infinite;
+      background: url('../images/cursors/ship-wheel-wait.png') center / contain no-repeat;
+      display: block;
+      filter: drop-shadow(0 .125rem .25rem rgba(7, 25, 35, .28));
+      height: 100%;
+      width: 100%;
+    }
+
+    &.is-visible {
+      opacity: 1;
+    }
+  }
+}
+
+@keyframes op-cursor-wheel-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .op-cursor-wait span {
+    animation: none;
+  }
+}

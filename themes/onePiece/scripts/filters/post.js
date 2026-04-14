@@ -1,24 +1,30 @@
-/* global hexo */
-
 'use strict';
 
-hexo.extend.filter.register('after_post_render', data => {
-  const { config } = hexo;
-  const theme = hexo.theme.config;
+const { isExternalUrl } = require('../utils/url');
 
-  data.content = data.content.replace(/(<img[^>]*) src=/img, '$1 data-src=');
+function transformPostContent(content, siteUrl) {
+  return content
+    .replace(/(<img[^>]*) src=/img, '$1 data-src=')
+    .replace(/<a[^>]* href="([^"]+)"[^>]*>([^<]*)<\/a>/img, (match, href, html) => {
+      if (!href) {
+        return match;
+      }
 
-  const url = require('url');
-  const siteHost = url.parse(config.url).hostname || config.url;
-  data.content = data.content.replace(/<a[^>]* href="([^"]+)"[^>]*>([^<]*)<\/a>/img, (match, href, html) => {
-    // Exit if the href attribute doesn't exists.
-    if (!href) return match;
+      if (!isExternalUrl(href, siteUrl)) {
+        return match;
+      }
 
-    // Exit if the url has same host with `config.url`, which means it's an internal link.
-    let link = url.parse(href);
-    if (!link.protocol || link.hostname === siteHost) return match;
+      return `<span class="exturl" data-url="${Buffer.from(href).toString('base64')}">${html}</span>`;
+    });
+}
 
-    return `<span class="exturl" data-url="${Buffer.from(href).toString('base64')}">${html}</span>`;
-  });
+if (typeof hexo !== 'undefined' && hexo.extend && hexo.extend.filter) {
+  hexo.extend.filter.register('after_post_render', data => {
+    const { config } = hexo;
+    data.content = transformPostContent(data.content, config.url);
+  }, 0);
+}
 
-}, 0);
+module.exports = {
+  transformPostContent
+};

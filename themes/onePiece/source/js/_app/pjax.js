@@ -1,14 +1,20 @@
+var shell = APP.modules.globals;
+var playerModule = APP.modules.player;
+var pageModule = APP.modules.page;
+var sidebarModule = APP.modules.sidebar;
+var utilsModule = APP.modules.utils;
+
 const domInit = function() {
   $.each('.overview .menu > .item', function(el) {
     siteNav.child('.menu').appendChild(el.cloneNode(true));
   })
 
-  loadCat.addEventListener('click', Loader.vanish);
-  menuToggle.addEventListener('click', sideBarToggleHandle);
-  $('.dimmer').addEventListener('click', sideBarToggleHandle);
+  loadCat.addEventListener('click', shell.Loader.vanish);
+  menuToggle.addEventListener('click', sidebarModule.sideBarToggleHandle);
+  $('.dimmer').addEventListener('click', sidebarModule.sideBarToggleHandle);
 
-  quickBtn.child('.down').addEventListener('click', goToBottomHandle);
-  quickBtn.child('.up').addEventListener('click', backToTopHandle);
+  quickBtn.child('.down').addEventListener('click', sidebarModule.goToBottomHandle);
+  quickBtn.child('.up').addEventListener('click', sidebarModule.backToTopHandle);
 
   if(!toolBtn) {
     toolBtn = siteHeader.createChild('div', {
@@ -22,18 +28,26 @@ const domInit = function() {
   goToComment = toolBtn.child('.chat');
   showContents = toolBtn.child('.contents');
 
-  backToTop.addEventListener('click', backToTopHandle);
-  goToComment.addEventListener('click', goToCommentHandle);
-  showContents.addEventListener('click', sideBarToggleHandle);
+  shell.setToolRefs({
+    toolBtn: toolBtn,
+    toolPlayer: toolPlayer,
+    backToTop: backToTop,
+    goToComment: goToComment,
+    showContents: showContents
+  });
 
-  mediaPlayer(toolPlayer)
+  backToTop.addEventListener('click', sidebarModule.backToTopHandle);
+  goToComment.addEventListener('click', sidebarModule.goToCommentHandle);
+  showContents.addEventListener('click', sidebarModule.sideBarToggleHandle);
+
+  playerModule.mediaPlayer(toolPlayer)
   $('main').addEventListener('click', function() {
     toolPlayer.player.mini()
   })
 }
 
 const pjaxReload = function () {
-  pagePosition()
+  shell.pagePosition()
 
   if(sideBar.hasClass('on')) {
     transition(sideBar, function () {
@@ -51,54 +65,59 @@ const siteRefresh = function (reload) {
   LOCAL_HASH = 0
   LOCAL_URL = window.location.href
 
-  vendorCss('katex');
-  vendorJs('copy_tex');
-  vendorCss('mermaid');
-  vendorJs('chart');
-  vendorJs('valine', function() {
-    var options = Object.assign({}, CONFIG.valine);
-    options = Object.assign(options, LOCAL.valine||{});
-    options.el = '#comments';
-    options.pathname = LOCAL.path;
-    options.pjax = pjax;
-    options.lazyload = lazyload;
+  utilsModule.vendorCss('katex');
+  utilsModule.vendorJs('copy_tex');
+  utilsModule.vendorCss('mermaid');
+  utilsModule.vendorJs('chart');
+  if (utilsModule.hasValineCredentials()) {
+    utilsModule.vendorJs('valine', function() {
+      var options = Object.assign({}, CONFIG.valine);
+      options = Object.assign(options, LOCAL.valine || {});
+      options.el = '#comments';
+      options.pathname = LOCAL.path;
+      options.pjax = pjax;
+      options.lazyload = shell.lazyload;
 
-    new MiniValine(options);
+      new MiniValine(options);
 
-    setTimeout(function(){
-      positionInit(1);
-      postFancybox('.v');
-    }, 1000);
-  }, window.MiniValine);
+      setTimeout(function(){
+        shell.positionInit(1);
+        pageModule.postFancybox('.v');
+      }, 1000);
+    }, window.MiniValine);
+  } else if (goToComment) {
+    goToComment.display("none");
+  }
 
   if(!reload) {
-    $.each('script[data-pjax]', pjaxScript);
+    $.each('script[data-pjax]', utilsModule.pjaxScript);
   }
 
   originTitle = document.title
 
-  resizeHandle()
+  shell.resizeHandle()
 
-  menuActive()
+  sidebarModule.menuActive()
 
-  sideBarTab()
-  sidebarTOC()
+  sidebarModule.sideBarTab()
+  shell.syncSidebarHeight()
+  sidebarModule.sidebarTOC()
 
-  registerExtURL()
-  postBeauty()
-  tabFormat()
+  pageModule.registerExtURL()
+  pageModule.postBeauty()
+  pageModule.tabFormat()
 
   toolPlayer.player.load(LOCAL.audio || CONFIG.audio || {})
 
-  Loader.hide()
+  shell.Loader.hide()
 
   setTimeout(function(){
-    positionInit()
+    shell.positionInit()
   }, 500);
 
-  cardActive()
+  pageModule.cardActive()
 
-  lazyload.observe()
+  shell.lazyload.observe()
 }
 
 const siteInit = function () {
@@ -115,25 +134,26 @@ const siteInit = function () {
             analytics: false,
             cacheBust: false
           })
+  APP.state.navigation.pjax = pjax;
 
   CONFIG.quicklink.ignores = LOCAL.ignores
   quicklink.listen(CONFIG.quicklink)
 
-  visibilityListener()
-  themeColorListener()
+  shell.visibilityListener()
+  shell.themeColorListener()
 
-  algoliaSearch(pjax)
+  pageModule.algoliaSearch(pjax)
 
-  window.addEventListener('scroll', scrollHandle)
+  window.addEventListener('scroll', shell.scrollHandle)
 
-  window.addEventListener('resize', resizeHandle)
+  window.addEventListener('resize', shell.resizeHandle)
 
   window.addEventListener('pjax:send', pjaxReload)
 
   window.addEventListener('pjax:success', siteRefresh)
 
   window.addEventListener('beforeunload', function() {
-    pagePosition()
+    shell.pagePosition()
   })
 
   siteRefresh(1)
@@ -141,4 +161,4 @@ const siteInit = function () {
 
 window.addEventListener('DOMContentLoaded', siteInit);
 
-console.log('%c Theme.Shoka v' + CONFIG.version + ' %c https://shoka.lostyu.me/ ', 'color: white; background: #e9546b; padding:5px 0;', 'padding:4px;border:1px solid #e9546b;')
+console.log('%c Theme.HeyOnePiece v' + CONFIG.version + ' %c https://heyonepiece.com/ ', 'color: white; background: #e9546b; padding:5px 0;', 'padding:4px;border:1px solid #e9546b;')

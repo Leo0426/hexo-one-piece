@@ -8,8 +8,21 @@
     cursor: pointer;
   }
 
+  .theme {
+    transition: transform .3s cubic-bezier(.34, 1.6, .64, 1), filter .25s ease;
+
+    &:hover {
+      transform: scale(1.22) rotate(14deg);
+      filter: brightness(1.18) drop-shadow(0 0 .4rem rgba(255, 200, 40, .55));
+    }
+
+    &:active {
+      transform: scale(.9) rotate(0deg);
+      transition-duration: .1s;
+    }
+  }
+
   .i-sun {
     font-size: $font-size-large;
   }
 }
-

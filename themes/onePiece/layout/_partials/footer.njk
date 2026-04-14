@@ -1,4 +1,7 @@
 <div class="status">
+  <div class="putOnRecord">
+        <a href="https://beian.miit.gov.cn/" target="_blank">京ICP备2022010568号-1</a>
+  </div>
   <div class="copyright">
     {% set copyright_year = date(null, 'YYYY') %}
     &copy; {% if theme.footer.since and theme.footer.since != copyright_year %}{{ theme.footer.since }} – {% endif %}
@@ -26,7 +29,7 @@
 
   {%- if theme.footer.powered %}
   <div class="powered-by">
-    {{ __('footer.powered', _url('https://hexo.io', 'Hexo') + ' & Theme.' + _url('https://github.com/amehime/hexo-theme-shoka', 'Shoka')) }}
+    {{ __('footer.powered', _url('https://hexo.io', 'Hexo') + ' & Theme.' + _url('https://github.com/Leo0426/hexo-one-piece', 'HeyOnePiece')) }}
   </div>
   {%- endif %}
 </div>

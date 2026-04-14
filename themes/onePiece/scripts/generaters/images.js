@@ -2,8 +2,7 @@
 
 const fs = require('hexo-fs');
 
-hexo.extend.generator.register('images', function(locals){
-  const config = hexo.config;
+hexo.extend.generator.register('images', function(){
   const theme = hexo.theme.config;
   const dir = 'source/_data/' + theme.images + '/'
 

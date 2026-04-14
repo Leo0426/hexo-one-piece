@@ -1,10 +1,10 @@
 const getRndInteger = function (min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
-}
+};
 
 const getDocHeight = function () {
   return $('main > .inner').offsetHeight;
-}
+};
 
 const getScript = function(url, callback, condition) {
   if (condition) {
@@ -21,18 +21,18 @@ const getScript = function(url, callback, condition) {
     script.src = url;
     document.head.appendChild(script);
   }
-}
+};
 
 const assetUrl = function(asset, type) {
-  var str = CONFIG[asset][type]
+  var str = CONFIG[asset][type];
   if(str.indexOf('npm')>-1||str.indexOf('gh')>-1||str.indexOf('combine')>-1)
-    return "//cdn.jsdelivr.net/" + str
+    return "//cdn.jsdelivr.net/" + str;
 
   if(str.indexOf('http')>-1)
-    return str
+    return str;
 
   return statics + str;
-}
+};
 
 const vendorJs = function(type, callback, condition) {
   if(LOCAL[type]) {
@@ -40,7 +40,15 @@ const vendorJs = function(type, callback, condition) {
       window[type] = true;
     }, condition || window[type]);
   }
-}
+};
+
+const hasValineCredentials = function() {
+  if(!LOCAL.valine)
+    return false;
+
+  var runtimeValine = Object.assign({}, CONFIG.valine || {}, LOCAL.valine === true ? {} : LOCAL.valine || {});
+  return Boolean(runtimeValine.appId && runtimeValine.appKey);
+};
 
 const vendorCss = function(type, condition) {
   if(window['css'+type])
@@ -55,7 +63,7 @@ const vendorCss = function(type, condition) {
 
     window['css'+type] = true;
   }
-}
+};
 
 const pjaxScript = function(element) {
   var code = element.text || element.textContent || element.innerHTML || '';
@@ -83,36 +91,37 @@ const pjaxScript = function(element) {
     script.appendChild(document.createTextNode(code));
   }
   parent.appendChild(script);
-}
+};
 
 const pageScroll = function(target, offset, complete) {
+  var currentSiteNavHeight = APP.state.siteNavHeight || 0;
   var opt = {
     targets: typeof offset == 'number' ? target.parentNode : document.scrollingElement,
     duration: 500,
     easing: "easeInOutQuad",
-    scrollTop: offset || (typeof target == 'number' ? target : (target ? target.top() + document.documentElement.scrollTop - siteNavHeight : 0)),
+    scrollTop: offset || (typeof target == 'number' ? target : (target ? target.top() + document.documentElement.scrollTop - currentSiteNavHeight : 0)),
     complete: function() {
-      complete && complete()
+      complete && complete();
     }
-  }
+  };
   anime(opt);
-}
+};
 
 const transition = function(target, type, complete) {
-  var animation = {}
-  var display = 'none'
+  var animation = {};
+  var display = 'none';
   switch(type) {
     case 0:
-      animation = {opacity: [1, 0]}
-    break;
+      animation = {opacity: [1, 0]};
+      break;
     case 1:
-      animation = {opacity: [0, 1]}
-      display = 'block'
-    break;
+      animation = {opacity: [0, 1]};
+      display = 'block';
+      break;
     case 'bounceUpIn':
       animation = {
         begin: function(anim) {
-          target.display('block')
+          target.display('block');
         },
         translateY: [
           { value: -60, duration: 200 },
@@ -121,52 +130,52 @@ const transition = function(target, type, complete) {
           { value: 0, duration: 200 }
         ],
         opacity: [0, 1]
-      }
-      display = 'block'
-    break;
+      };
+      display = 'block';
+      break;
     case 'shrinkIn':
       animation = {
         begin: function(anim) {
-          target.display('block')
+          target.display('block');
         },
         scale: [
           { value: 1.1, duration: 300 },
           { value: 1, duration: 200 }
         ],
         opacity: 1
-      }
-      display = 'block'
-    break;
+      };
+      display = 'block';
+      break;
     case 'slideRightIn':
       animation = {
         begin: function(anim) {
-          target.display('block')
+          target.display('block');
         },
         translateX: [100, 0],
         opacity: [0, 1]
-      }
-      display = 'block'
-    break;
+      };
+      display = 'block';
+      break;
     case 'slideRightOut':
       animation = {
         translateX: [0, 100],
         opacity: [1, 0]
-      }
-    break;
+      };
+      break;
     default:
-      animation = type
-      display = type.display
-    break;
+      animation = type;
+      display = type.display;
+      break;
   }
   anime(Object.assign({
     targets: target,
     duration: 200,
     easing: 'linear'
   }, animation)).finished.then(function() {
-      target.display(display)
-      complete && complete()
+      target.display(display);
+      complete && complete();
     });
-}
+};
 
 const store = {
   get: function(item) {
@@ -179,4 +188,18 @@ const store = {
   del: function(item) {
     localStorage.removeItem(item);
   }
-}
+};
+
+APP.register('utils', {
+  assetUrl: assetUrl,
+  getDocHeight: getDocHeight,
+  getRndInteger: getRndInteger,
+  getScript: getScript,
+  hasValineCredentials: hasValineCredentials,
+  pageScroll: pageScroll,
+  pjaxScript: pjaxScript,
+  store: store,
+  transition: transition,
+  vendorCss: vendorCss,
+  vendorJs: vendorJs
+});

@@ -1,12 +1,49 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
 <meta name="theme-color" content="#FFF">
+<meta name="referrer" content="no-referrer" />
+
+<style>
+  html[data-theme="dark"],
+  html[data-theme="dark"] body,
+  html[data-theme="dark"] #loading {
+    background: #101923;
+  }
+</style>
+
+<script>
+  (function() {
+    var storedTheme;
+    var prefersDark = false;
+
+    try {
+      storedTheme = localStorage.getItem('theme');
+    } catch (error) {}
+
+    if(window.matchMedia) {
+      prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    }
+
+    var isDark = storedTheme
+      ? storedTheme === 'dark'
+      : ({{ 'true' if theme.darkmode else 'false' }} || prefersDark);
+
+    if(isDark) {
+      document.documentElement.setAttribute('data-theme', 'dark');
+
+      var themeColor = document.querySelector('meta[name="theme-color"]');
+      if(themeColor) {
+        themeColor.setAttribute('content', '#101923');
+      }
+    }
+  })();
+</script>
 
 {%- if theme.favicon.apple_touch_icon %}
   <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for(theme.statics +  theme.images + theme.favicon.apple_touch_icon) }}">
 {%- endif %}
 
-<link rel="icon" type="image/ico" sizes="32x32" href="{{ url_for(theme.statics +  theme.images + '/favicon.ico') }}">
+<link rel="icon" type="image/x-icon" sizes="16x16 32x32 48x48 64x64" href="{{ url_for(theme.statics +  theme.images + '/favicon.ico') }}">
 
 {%- if theme.favicon.safari_pinned_tab %}
   <link rel="mask-icon" href="{{ url_for(theme.statics + theme.images + theme.favicon.safari_pinned_tab) }}" color="{{ theme.android_chrome_color }}">

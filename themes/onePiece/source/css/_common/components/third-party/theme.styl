@@ -1,17 +1,17 @@
 #neko {
   @extend $fix-fullscreen;
   display: none;
-  background: linear-gradient(to top, #fddb92 0%, #d1fdff 80%);
-
-  .planet {
-    position: fixed;
-    left: -50%;
-    top: -50%;
-    width: 200%;
-    height: 200%;
-    animation: rotate 2s cubic-bezier(.7, 0, 0, 1);
-    transform-origin: center bottom;
-  }
+  overflow: hidden;
+  // 伟大航路的海面 —— 整屏使用海浪色，避免天空/海面硬分界
+  background:
+    radial-gradient(ellipse at 50% 18%, rgba(255, 255, 255, .5) 0%, rgba(255, 255, 255, .16) 30%, transparent 58%),
+    linear-gradient(180deg,
+      #d9fbff 0%,
+      #a9eef8 24%,
+      #66cfe8 48%,
+      #2d9ed3 72%,
+      #0d68b3 100%
+    );
 
   &:before {
     content: "";
@@ -20,103 +20,18 @@
     right: 0;
     top: 0;
     bottom: 0;
+    z-index: 0;
     opacity: 0;
-    background: linear-gradient(to top, #30cfd0 0%, #330867 100%);
-    transition: 2s ease all;
-  }
-
-  .sun, .moon {
-    position: absolute;
-    border-radius: 100%;
-    left: 55%;
-    top: 32%;
-  }
-
-  .sun {
-    height: 40px;
-    width: 40px;
-    background: #ffee94;
-    box-shadow: 0px 0px 40px #ffee94;
-    opacity: 1;
-  }
-
-  .moon {
-    height: 24px;
-    width: 24px;
-    background: #eee;
-    box-shadow: 0px 0px 20px #fff;
-    opacity: 0;
-  }
-
-  .body {
-    display: block;
-    position: absolute;
-    bottom: -20px;
-    height: 140px;
-    width: 135px;
-    left: 50%;
-    margin-left: -100px;
-    background: #777;
-    transition: all .25s ease-in-out;
-    animation: slideUpBigIn 1s;
-
-    &:before, &:after  {
-      position: absolute;
-      content: "";
-      width: 0;
-      height: 0;
-      border-bottom: 20px solid #777;
-      top: -20px;
-      transition: all .25s ease-in-out;
-    }
-    &:before {
-      border-left: 0px solid transparent;
-      border-right: 30px solid transparent;
-      left: 0;
-    }
-    &:after {
-      border-right: 0px solid transparent;
-      border-left: 30px solid transparent;
-      right: 0;
-    }
-
-    .eyes {
-      display: block;
-      position: absolute;
-      background: #ffee94;
-      height: 40px;
-      width: 40px;
-      border-radius: 100%;
-      bottom: 80px;
-    }
-
-    .eyes.left {
-      left: 12px;
-    }
-
-    .eyes.right {
-      right: 12px;
-    }
-
-    .eyes .pupil, .nose {
-      display: block;
-      position: relative;
-      background: #ffb399;
-      border-radius: 100%;
-      margin: 0 auto;
-    }
-
-    .eyes .pupil {
-      height: 100%;
-      width: 5px;
-      transition: width 1s .5s ease-in-out;
-    }
-
-    .nose {
-      top: 45px;
-      height: 10px;
-      width: 10px;
-    }
+    // 新世界的深夜海洋 —— 深邃而神秘
+    background:
+      radial-gradient(ellipse at 50% 16%, rgba(77, 208, 225, .16) 0%, rgba(77, 208, 225, .06) 32%, transparent 60%),
+      linear-gradient(180deg,
+        #061826 0%,
+        #0b3148 34%,
+        #0b4262 62%,
+        #071c34 100%
+      );
+    transition: opacity 1.8s ease;
   }
 
   &.dark {
@@ -124,28 +39,679 @@
       opacity: 1;
     }
 
-    .sun {
+    .theme-voyage__sun {
       opacity: 0;
+      box-shadow: none;
+      transform: translate3d(0, 0, 0) scale(.42);
     }
 
-    .moon {
+    .theme-voyage__moon {
+      opacity: 1;
+      transform: translate3d(0, 0, 0) scale(1);
+    }
+
+    .theme-voyage__wheel {
+      opacity: .58;
+      filter: drop-shadow(0 1.15rem 1.35rem rgba(0, 0, 0, .46)) drop-shadow(0 0 1.2rem rgba(77, 208, 225, .16)) brightness(.9);
+    }
+
+    .theme-voyage__jolly {
+      filter: drop-shadow(0 .75rem .9rem rgba(0, 0, 0, .64)) drop-shadow(0 0 .5rem rgba(219, 231, 239, .2));
+    }
+
+    .theme-voyage:before {
+      background: linear-gradient(180deg,
+        rgba(6, 24, 38, 0) 0%,
+        rgba(20, 76, 108, .18) 28%,
+        rgba(11, 66, 98, .42) 58%,
+        rgba(8, 42, 70, .64) 100%
+      );
+    }
+
+    .theme-voyage:after {
+      background: linear-gradient(180deg,
+        rgba(8, 42, 70, 0) 0%,
+        rgba(8, 42, 70, .64) 45%,
+        rgba(6, 24, 38, .9) 100%
+      );
+    }
+
+    .theme-voyage__wave--back {
+      opacity: .44;
+      background:
+        url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 960 100'><path d='M0,50 C87,50 153,20 240,20 C327,20 393,50 480,50 C567,50 633,80 720,80 C807,80 873,50 960,50 L960,100 L0,100 Z' fill='rgba(88,176,220,.16)'/></svg>") repeat-x 0 0,
+        linear-gradient(180deg, rgba(20, 76, 108, 0) 0%, rgba(24, 105, 148, .16) 42%, rgba(9, 65, 112, .42) 100%);
+      background-size: 960px 100%, 100% 100%;
+    }
+
+    .theme-voyage__wave--mid {
+      opacity: .5;
+      background:
+        url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 760 100'><path d='M0,54 C72,54 118,26 190,26 C262,26 308,54 380,54 C452,54 498,82 570,82 C642,82 688,54 760,54 L760,100 L0,100 Z' fill='rgba(116,190,230,.16)'/></svg>") repeat-x 0 0,
+        linear-gradient(180deg, rgba(24, 105, 148, 0) 0%, rgba(18, 92, 154, .18) 48%, rgba(9, 58, 104, .42) 100%);
+      background-size: 760px 100%, 100% 100%;
+    }
+
+    .theme-voyage__wave--front {
+      opacity: .52;
+      background:
+        url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 640 100'><path d='M0,50 C58,50 102,10 160,10 C218,10 262,50 320,50 C378,50 422,90 480,90 C538,90 582,50 640,50 L640,100 L0,100 Z' fill='rgba(178,222,248,.18)'/></svg>") repeat-x 0 0,
+        linear-gradient(180deg, rgba(22, 88, 156, 0) 0%, rgba(16, 91, 162, .22) 50%, rgba(8, 42, 70, .62) 100%);
+      background-size: 640px 100%, 100% 100%;
+    }
+
+    .theme-voyage__clouds {
+      opacity: 0;
+      transform: translate3d(0, -.75rem, 0);
+    }
+
+    .theme-voyage__stars {
       opacity: 1;
     }
 
-    .body {
-      background: #444;
-      &:before {
-        border-bottom: 20px solid #444;
-      }
-      &:after {
-        border-bottom: 20px solid #444;
-      }
-
-      .eyes .pupil {
-        height: 90%;
-        width: 34px;
-        margin: 5% auto;
-      }
+    .theme-voyage__caption {
+      .caption--dark { display: block; }
+      .caption--light { display: none; }
     }
+  }
+}
+
+.theme-voyage {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  z-index: 1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.theme-voyage:before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 56vh;
+  z-index: 0;
+  background: linear-gradient(180deg,
+    rgba(217, 251, 255, 0) 0%,
+    rgba(169, 238, 248, .16) 24%,
+    rgba(102, 207, 232, .34) 50%,
+    rgba(45, 158, 211, .5) 74%,
+    rgba(13, 104, 179, .68) 100%
+  );
+}
+
+.theme-voyage:after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 17vh;
+  z-index: 1;
+  background: linear-gradient(180deg,
+    rgba(13, 104, 179, 0) 0%,
+    rgba(13, 104, 179, .56) 44%,
+    rgba(5, 93, 180, .86) 100%
+  );
+}
+
+.theme-voyage__sun,
+.theme-voyage__moon {
+  position: absolute;
+  right: 12vw;
+  top: 8vh;
+  border-radius: 50%;
+  transition: opacity 1.2s ease, transform 1.4s cubic-bezier(.34, 1.4, .64, 1);
+}
+
+.theme-voyage__sun {
+  width: 8.5rem;
+  height: 8.5rem;
+  opacity: 1;
+  // 大秘宝的金色光芒
+  background: radial-gradient(circle, #fff9d0 0%, #ffe566 35%, #ffbb00 68%, #ff8c00 100%);
+  box-shadow:
+    0 0 2.5rem rgba(255, 230, 80, .95),
+    0 0 6rem rgba(255, 180, 0, .65),
+    0 0 12rem rgba(255, 140, 0, .3),
+    0 0 22rem rgba(255, 200, 0, .1);
+  transform: translate3d(0, 0, 0) scale(1);
+  animation: voyage-sun-drift 2.5s ease-in-out both;
+
+  // 光晕光环
+  &:before {
+    content: "";
+    position: absolute;
+    left: -35%;
+    top: -35%;
+    width: 170%;
+    height: 170%;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 240, 100, .22) 38%, transparent 68%);
+    animation: voyage-sun-pulse 3.5s ease-in-out infinite;
+  }
+}
+
+.theme-voyage__moon {
+  width: 6.5rem;
+  height: 6.5rem;
+  opacity: 0;
+  background: radial-gradient(circle, #ffffff 0%, #ddeeff 40%, #aaccee 100%);
+  box-shadow:
+    0 0 2rem rgba(180, 220, 255, .88),
+    0 0 5rem rgba(100, 180, 255, .42),
+    0 0 10rem rgba(50, 150, 255, .18);
+  transform: translate3d(-2rem, 3rem, 0) scale(.62);
+
+  // 月牙阴影
+  &:after {
+    content: "";
+    position: absolute;
+    right: -.4rem;
+    top: -.4rem;
+    width: 6.3rem;
+    height: 6.3rem;
+    border-radius: 50%;
+    background: radial-gradient(circle at 58% 42%, #010810 45%, #020e22 78%, #051528 100%);
+  }
+}
+
+// 日间云层
+.theme-voyage__clouds {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 58%;
+  z-index: 1;
+  opacity: .9;
+  transition: opacity 1.2s ease, transform 1.2s ease;
+}
+
+.theme-voyage__cloud {
+  position: absolute;
+  display: block;
+  width: 12.5rem;
+  height: 3.4rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .76);
+  box-shadow:
+    2.3rem -.9rem 0 -.55rem rgba(255, 255, 255, .74),
+    4.7rem -.45rem 0 -.8rem rgba(255, 255, 255, .68),
+    7.4rem -.95rem 0 -.65rem rgba(255, 255, 255, .72),
+    0 .85rem 2.4rem rgba(255, 255, 255, .28),
+    inset 0 -.28rem .95rem rgba(102, 207, 232, .22);
+  animation: voyage-cloud-drift 14s ease-in-out infinite alternate;
+
+  &:before,
+  &:after {
+    content: "";
+    position: absolute;
+    bottom: .32rem;
+    border-radius: 50%;
+    background: inherit;
+  }
+
+  &:before {
+    left: 1.3rem;
+    width: 4.5rem;
+    height: 4.5rem;
+    box-shadow: 3.2rem -.9rem 0 .65rem rgba(255, 255, 255, .8);
+  }
+
+  &:after {
+    right: 1.5rem;
+    width: 5.5rem;
+    height: 5.5rem;
+    box-shadow: -3.4rem .45rem 0 -.75rem rgba(255, 255, 255, .72);
+  }
+}
+
+.theme-voyage__cloud--1 {
+  left: 4%;
+  top: 17%;
+  transform: scale(1.22);
+  animation-duration: 16s;
+}
+
+.theme-voyage__cloud--2 {
+  right: 6%;
+  top: 24%;
+  transform: scale(1.12);
+  animation-duration: 18s;
+  animation-delay: -4s;
+}
+
+.theme-voyage__cloud--3 {
+  left: 23%;
+  top: 8%;
+  transform: scale(.98);
+  opacity: .84;
+  animation-duration: 20s;
+  animation-delay: -8s;
+}
+
+.theme-voyage__cloud--4 {
+  right: 29%;
+  top: 12%;
+  transform: scale(.86);
+  opacity: .78;
+  animation-duration: 22s;
+  animation-delay: -12s;
+}
+
+.theme-voyage__cloud--5 {
+  left: -8%;
+  top: 35%;
+  transform: scale(1.48);
+  opacity: .7;
+  animation-duration: 24s;
+  animation-delay: -6s;
+}
+
+.theme-voyage__cloud--6 {
+  right: -7%;
+  top: 39%;
+  transform: scale(1.42);
+  opacity: .66;
+  animation-duration: 26s;
+  animation-delay: -10s;
+}
+
+.theme-voyage__cloud--7 {
+  left: 43%;
+  top: 29%;
+  transform: scale(1.02);
+  opacity: .68;
+  animation-duration: 19s;
+  animation-delay: -14s;
+}
+
+.theme-voyage__cloud--8 {
+  left: 56%;
+  top: 7%;
+  transform: scale(.72);
+  opacity: .66;
+  animation-duration: 21s;
+  animation-delay: -16s;
+}
+
+.theme-voyage__cloud--9 {
+  left: 12%;
+  top: 45%;
+  transform: scale(.96);
+  opacity: .58;
+  animation-duration: 23s;
+  animation-delay: -18s;
+}
+
+.theme-voyage__cloud--10 {
+  right: 18%;
+  top: 47%;
+  transform: scale(.9);
+  opacity: .56;
+  animation-duration: 25s;
+  animation-delay: -20s;
+}
+
+// 夜空繁星
+.theme-voyage__stars {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 68%;
+  opacity: 0;
+  transition: opacity 2s ease .4s;
+  z-index: 0;
+}
+
+.theme-voyage__star {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, .82);
+  box-shadow: 0 0 .45rem rgba(219, 231, 239, .38);
+
+  &:nth-child(3n+1) {
+    animation: star-twinkle 1.8s ease-in-out infinite;
+  }
+
+  &:nth-child(3n+2) {
+    animation: star-twinkle 2.8s ease-in-out infinite .8s;
+  }
+
+  &:nth-child(3n) {
+    animation: star-twinkle 3.4s ease-in-out infinite 1.6s;
+  }
+
+  &:nth-child(5n) {
+    background: rgba(255, 255, 255, .95);
+    box-shadow: 0 0 .75rem rgba(219, 231, 239, .7), 0 0 1.4rem rgba(77, 208, 225, .22);
+  }
+
+  &:nth-child(7n) {
+    opacity: .88;
+    transform: scale(1.45);
+  }
+
+  &:nth-child(11n) {
+    background: rgba(255, 246, 190, .95);
+    box-shadow: 0 0 .8rem rgba(255, 246, 190, .72), 0 0 1.55rem rgba(255, 209, 102, .24);
+  }
+}
+
+// 航海主题台词
+.theme-voyage__caption {
+  position: absolute;
+  bottom: 34vh;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  z-index: 5;
+  white-space: nowrap;
+  animation: caption-appear .9s ease 1.5s both;
+
+  .caption--dark { display: none; }
+  .caption--light { display: block; }
+
+  span {
+    font-family: 'Georgia', 'Times New Roman', serif;
+    font-size: 1.1rem;
+    font-weight: bold;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: rgba(235, 247, 255, .92);
+    text-shadow:
+      0 0 .75rem rgba(77, 208, 225, .5),
+      0 2px 7px rgba(0, 0, 0, .64);
+  }
+}
+
+.theme-voyage__mark {
+  position: absolute;
+  left: 50%;
+  top: 44%;
+  width: 16rem;
+  height: 16rem;
+  transform: translate3d(-50%, -50%, 0);
+  z-index: 3;
+  animation: voyage-mark-float 2.5s ease-in-out both;
+}
+
+.theme-voyage__wheel,
+.theme-voyage__jolly {
+  display: block;
+  position: absolute;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.theme-voyage__wheel {
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  opacity: .52;
+  filter: drop-shadow(0 1.35rem 1.5rem rgba(7, 25, 35, .36));
+  animation: voyage-wheel-spin 2.5s cubic-bezier(.7, 0, .2, 1) both;
+}
+
+.theme-voyage__jolly {
+  left: 50%;
+  top: 50%;
+  width: 52%;
+  height: 52%;
+  object-fit: contain;
+  transform: translate3d(-50%, -50%, 0);
+  filter: drop-shadow(0 .75rem .85rem rgba(7, 25, 35, .42));
+  animation: voyage-jolly-pop 2.5s ease-in-out both;
+}
+
+.theme-voyage__wave {
+  position: absolute;
+  left: -12%;
+  right: -12%;
+  bottom: -1px;
+  z-index: 2;
+  transform: translate3d(0, 0, 0);
+}
+
+.theme-voyage__wave--back {
+  height: 38vh;
+  opacity: .46;
+  background:
+    url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 960 100'><path d='M0,50 C87,50 153,20 240,20 C327,20 393,50 480,50 C567,50 633,80 720,80 C807,80 873,50 960,50 L960,100 L0,100 Z' fill='rgba(255,255,255,.24)'/></svg>") repeat-x 0 0,
+    linear-gradient(180deg, rgba(169, 238, 248, 0) 0%, rgba(102, 207, 232, .12) 40%, rgba(45, 158, 211, .28) 100%);
+  background-size: 960px 100%, 100% 100%;
+  animation: voyage-wave-drift-back 8s linear infinite;
+}
+
+.theme-voyage__wave--mid {
+  height: 33vh;
+  opacity: .5;
+  background:
+    url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 760 100'><path d='M0,54 C72,54 118,26 190,26 C262,26 308,54 380,54 C452,54 498,82 570,82 C642,82 688,54 760,54 L760,100 L0,100 Z' fill='rgba(255,255,255,.28)'/></svg>") repeat-x 0 0,
+    linear-gradient(180deg, rgba(169, 238, 248, 0) 0%, rgba(78, 193, 226, .13) 44%, rgba(26, 138, 205, .3) 100%);
+  background-size: 760px 100%, 100% 100%;
+  animation: voyage-wave-drift-mid 6.75s linear infinite;
+}
+
+.theme-voyage__wave--front {
+  height: 29vh;
+  opacity: .54;
+  background:
+    url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 640 100'><path d='M0,50 C58,50 102,10 160,10 C218,10 262,50 320,50 C378,50 422,90 480,90 C538,90 582,50 640,50 L640,100 L0,100 Z' fill='rgba(255,255,255,.34)'/></svg>") repeat-x 0 0,
+    linear-gradient(180deg, rgba(217, 251, 255, 0) 0%, rgba(86, 183, 224, .16) 48%, rgba(13, 104, 179, .58) 100%);
+  background-size: 640px 100%, 100% 100%;
+  animation: voyage-wave-drift-front 5.5s linear infinite reverse;
+}
+
+@keyframes voyage-sun-drift {
+  0% {
+    transform: translate3d(0, 2.5rem, 0) scale(.78);
+    opacity: .45;
+  }
+  55% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes voyage-sun-pulse {
+  0%, 100% {
+    opacity: .5;
+    transform: scale(1);
+  }
+  50% {
+    opacity: .88;
+    transform: scale(1.12);
+  }
+}
+
+@keyframes voyage-mark-float {
+  0% {
+    opacity: 0;
+    transform: translate3d(-50%, -32%, 0) scale(.78);
+  }
+  28% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(-50%, -50%, 0) scale(1);
+  }
+}
+
+@keyframes voyage-wheel-spin {
+  0% {
+    transform: rotate(-48deg) scale(.88);
+  }
+  100% {
+    transform: rotate(312deg) scale(1);
+  }
+}
+
+@keyframes voyage-jolly-pop {
+  0% {
+    opacity: 0;
+    transform: translate3d(-50%, -38%, 0) scale(.68);
+  }
+  36% {
+    opacity: 1;
+    transform: translate3d(-50%, -55%, 0) scale(1.1);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(-50%, -50%, 0) scale(1);
+  }
+}
+
+@keyframes voyage-wave-drift-back {
+  from { background-position: 0 0, 0 0; }
+  to { background-position: 960px 0, 0 0; }
+}
+
+@keyframes voyage-wave-drift-front {
+  from { background-position: 0 0, 0 0; }
+  to { background-position: 640px 0, 0 0; }
+}
+
+@keyframes voyage-wave-drift-mid {
+  from { background-position: 0 0, 0 0; }
+  to { background-position: 760px 0, 0 0; }
+}
+
+@keyframes voyage-cloud-drift {
+  from { margin-left: -1.2rem; }
+  to { margin-left: 1.2rem; }
+}
+
+@keyframes star-twinkle {
+  0%, 100% {
+    opacity: .12;
+    transform: scale(.7);
+  }
+  50% {
+    opacity: .66;
+    transform: scale(1.18);
+  }
+}
+
+@keyframes caption-appear {
+  0% {
+    opacity: 0;
+    letter-spacing: .3em;
+    transform: translateX(-50%) translateY(.5rem);
+  }
+  100% {
+    opacity: 1;
+    letter-spacing: .08em;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+@media (max-width: 767px) {
+  .theme-voyage__sun {
+    width: 5.75rem;
+    height: 5.75rem;
+  }
+
+  .theme-voyage__moon {
+    width: 4.5rem;
+    height: 4.5rem;
+
+    &:after {
+      width: 4.3rem;
+      height: 4.3rem;
+    }
+  }
+
+  .theme-voyage__sun,
+  .theme-voyage__moon {
+    right: 10vw;
+    top: 10vh;
+  }
+
+  .theme-voyage__mark {
+    width: 12rem;
+    height: 12rem;
+  }
+
+  .theme-voyage__wave--back {
+    height: 28vh;
+  }
+
+  .theme-voyage__wave--mid {
+    height: 24vh;
+  }
+
+  .theme-voyage__wave--front {
+    height: 20vh;
+  }
+
+  .theme-voyage__cloud--1 {
+    left: -28%;
+    top: 15%;
+    transform: scale(.92);
+  }
+
+  .theme-voyage__cloud--2 {
+    right: -32%;
+    top: 21%;
+    transform: scale(.82);
+  }
+
+  .theme-voyage__cloud--5 {
+    left: 12%;
+    top: 5%;
+    transform: scale(.7);
+    opacity: .56;
+  }
+
+  .theme-voyage__cloud--7 {
+    left: 38%;
+    top: 36%;
+    transform: scale(.68);
+    opacity: .46;
+  }
+
+  .theme-voyage__cloud--3,
+  .theme-voyage__cloud--4,
+  .theme-voyage__cloud--6,
+  .theme-voyage__cloud--8,
+  .theme-voyage__cloud--9,
+  .theme-voyage__cloud--10 {
+    display: none;
+  }
+
+  .theme-voyage__caption {
+    bottom: 26vh;
+
+    span {
+      font-size: .78rem;
+      padding: .32rem .9rem;
+      letter-spacing: .06em;
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .theme-voyage__sun,
+  .theme-voyage__sun:before,
+  .theme-voyage__mark,
+  .theme-voyage__wheel,
+  .theme-voyage__jolly,
+  .theme-voyage__wave,
+  .theme-voyage__cloud,
+  .theme-voyage__star {
+    animation: none;
   }
 }

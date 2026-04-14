@@ -13,6 +13,102 @@ html, body {
   height: 100%;
 }
 
+@font-face {
+  font-family: 'Noto Serif SC';
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url('/fonts/noto-serif-sc-300.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Noto Serif SC';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/noto-serif-sc-400.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Noto Serif SC';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('/fonts/noto-serif-sc-700.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'ONE PIECE';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/one-piece-400.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Pirata One';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/pirata-one-400.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Cinzel Decorative';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/cinzel-decorative-400.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Cinzel Decorative';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('/fonts/cinzel-decorative-700.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'ZCOOL KuaiLe';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/zcool-kuaile-400.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'ZCOOL QingKe HuangYou';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/zcool-qingke-huangyou-400.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Inconsolata';
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url('/fonts/inconsolata-300.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Inconsolata';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/inconsolata-400.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Inconsolata';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('/fonts/inconsolata-700.ttf') format('truetype');
+}
+
 body {
   background: linear-gradient(to top, var(--body-bg-shadow) 0, var(--grey-1) 20%) no-repeat bottom;
   color: var(--text-color);
@@ -55,11 +151,14 @@ body {
 }
 h1, h2, h3, h4, h5, h6 {
   font-family: $font-family-headings;
-  font-weight: bold;
+  font-weight: 400;
+  font-synthesis: none;
   line-height: 1.5;
+  letter-spacing: .02rem;
   margin: 1.25rem 0 .9375rem;
   &.title {
     font-family: $font-family-title;
+    font-weight: 400;
   }
 }
 
@@ -161,4 +260,14 @@ input, textarea {
   font-size: 1.33333em;
   line-height: .75em;
   vertical-align: -.0667em;
+}
+
+#comments .comments-disabled {
+  border: .0625rem dashed var(--grey-3);
+  border-radius: .75rem;
+  color: var(--grey-5);
+  font-size: $font-size-small;
+  margin: 1rem 0;
+  padding: .875rem 1rem;
+  text-align: center;
 }

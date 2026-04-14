@@ -1,6 +1,4 @@
 # Hexo Configuration
-## Docs: https://hexo.io/docs/configuration.html
-## Source: https://github.com/hexojs/hexo/
 
 # Site
 title: 开心每一天
@@ -13,7 +11,7 @@ timezone: 'Asia/Shanghai'
 
 # URL
 ## Set your site url here. For example, if you use GitHub Page, set url as 'https://username.github.io/project'
-url: http://heyonepiece.com
+url: https://www.heyonepiece.com
 permalink: :year/:month/:day/:title/
 permalink_defaults:
 pretty_urls:
@@ -113,7 +111,7 @@ markdown:
     quotes: '“”‘’'
   plugins:
     - plugin:
-        name: markdown-it-toc-and-anchor
+        name: ./markdown-it-toc-and-anchor
         enable: true
         options:
           tocClassName: 'toc'
@@ -135,16 +133,12 @@ markdown:
         enable: true
         options:
           title: "你知道得太多了"
-autoprefixer:
-  exclude:
-    - '*.min.css'
-
 algolia:
 #  appId: #Your appId
 #  apiKey: #Your apiKey
 #  adminApiKey: #Your adminApiKey
 #  chunkSize: 5000
-#  indexName: #"shoka"
+#  indexName: #"heyonepiece"
 #  fields:
 #    - title #必须配置
 #    - path #必须配置

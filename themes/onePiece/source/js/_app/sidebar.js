@@ -21,13 +21,13 @@ const sideBarToggleHandle = function (event, force) {
 
 const sideBarTab = function () {
   var sideBarInner = sideBar.child('.inner');
-  var panels = sideBar.find('.panel');
 
   if(sideBar.child('.tab')) {
     sideBarInner.removeChild(sideBar.child('.tab'));
   }
 
-  var list = document.createElement('ul'), active = 'active';
+  var list = APP.dom.createElement('ul');
+  var active = 'active';
   list.className = 'tab';
 
   ['contents', 'related', 'overview'].forEach(function (item) {
@@ -44,8 +44,8 @@ const sideBarTab = function () {
       showContents.display("")
     }
 
-    var tab = document.createElement('li')
-    var span = document.createElement('span')
+    var tab = APP.dom.createElement('li');
+    var span = APP.dom.createElement('span');
     var text = document.createTextNode(element.attr('data-title'));
     span.appendChild(text);
     tab.appendChild(span);
@@ -58,7 +58,7 @@ const sideBarTab = function () {
       element.removeClass('active');
     }
 
-    tab.addEventListener('click', function (element) {
+    tab.addEventListener('click', function (event) {
       var target = event.currentTarget;
       if (target.hasClass('active'))
         return;
@@ -221,16 +221,27 @@ const goToCommentHandle = function () {
 const menuActive = function () {
   $.each('.menu .item:not(.title)', function (element) {
     var target = element.child('a[href]');
-    var parentItem = element.parentNode.parentNode;
+    var parentItem = APP.dom.enhance(element.parentNode.parentNode);
+    var menuList = APP.dom.enhance(element.parentNode);
     if (!target) return;
     var isSamePath = target.pathname === location.pathname || target.pathname === location.pathname.replace('index.html', '');
     var isSubPath = !CONFIG.root.startsWith(target.pathname) && location.pathname.startsWith(target.pathname);
     var active = target.hostname === location.hostname && (isSamePath || isSubPath)
     element.toggleClass('active', active);
-    if(element.parentNode.child('.active') && parentItem.hasClass('dropdown')) {
+    if(menuList.child('.active') && parentItem.hasClass('dropdown')) {
       parentItem.removeClass('active').addClass('expand');
     } else {
       parentItem.removeClass('expand');
     }
   });
-}
+};
+
+APP.register('sidebar', {
+  backToTopHandle: backToTopHandle,
+  goToBottomHandle: goToBottomHandle,
+  goToCommentHandle: goToCommentHandle,
+  menuActive: menuActive,
+  sideBarTab: sideBarTab,
+  sideBarToggleHandle: sideBarToggleHandle,
+  sidebarTOC: sidebarTOC
+});

@@ -1,0 +1,49 @@
+{
+  "extends": ["eslint:recommended"],
+  "rules": {
+    "no-console": "off",
+    "no-unused-vars": ["warn", {
+      "args": "none"
+    }]
+  },
+  "overrides": [
+    {
+      "files": ["themes/onePiece/source/js/_app/*.js"],
+      "env": {
+        "browser": true,
+        "es2021": true
+      },
+      "parserOptions": {
+        "ecmaVersion": "latest",
+        "sourceType": "script"
+      },
+      "rules": {
+        "no-redeclare": "off",
+        "no-undef": "off",
+        "no-unused-vars": ["warn", {
+          "vars": "local",
+          "args": "none"
+        }]
+      }
+    },
+    {
+      "files": ["themes/onePiece/scripts/**/*.js"],
+      "env": {
+        "node": true,
+        "es2021": true
+      },
+      "parserOptions": {
+        "ecmaVersion": "latest",
+        "sourceType": "script"
+      },
+      "globals": {
+        "hexo": "readonly"
+      },
+      "rules": {
+        "no-unused-vars": ["warn", {
+          "args": "none"
+        }]
+      }
+    }
+  ]
+}

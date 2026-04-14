@@ -26,11 +26,109 @@
       margin-right: .5rem;
     }
 
+    .menu__home-icon {
+      background: url('../images/op-text-icons/sunny-emblem-nav.png') center / contain no-repeat;
+      display: inline-block;
+      filter: drop-shadow(0 .0625rem .0625rem rgba(0, 0, 0, .45));
+      height: 1.45em;
+      margin-right: .2rem;
+      vertical-align: -.35em;
+      width: 1.45em;
+
+      &:before {
+        content: '';
+      }
+    }
+
+    .menu__friends-icon {
+      background: url('../images/op-text-icons/going-merry.png') center / contain no-repeat;
+      display: inline-block;
+      filter: drop-shadow(0 .0625rem .0625rem rgba(0, 0, 0, .3));
+      height: 1.35em;
+      margin-right: .25rem;
+      vertical-align: -.28em;
+      width: 1.35em;
+
+      &:before {
+        content: '';
+      }
+    }
+
+    .menu__archives-icon {
+      background: url('../images/op-text-icons/log-pose.png') center / contain no-repeat;
+      display: inline-block;
+      filter: drop-shadow(0 .0625rem .0625rem rgba(0, 0, 0, .3));
+      height: 1.32em;
+      margin-right: .25rem;
+      vertical-align: -.24em;
+      width: 1.32em;
+
+      &:before {
+        content: '';
+      }
+    }
+
+    .menu__categories-icon {
+      background: url('../images/op-text-icons/poneglyph.png') center / contain no-repeat;
+      display: inline-block;
+      filter: drop-shadow(0 .0625rem .0625rem rgba(0, 0, 0, .28));
+      height: 1.28em;
+      margin-right: .25rem;
+      vertical-align: -.24em;
+      width: 1.28em;
+
+      &:before {
+        content: '';
+      }
+    }
+
+    .menu__tags-icon {
+      background: url('../images/op-text-icons/devil-fruit-round.png') center / contain no-repeat;
+      display: inline-block;
+      filter: drop-shadow(0 .0625rem .0625rem rgba(0, 0, 0, .28));
+      height: 1.28em;
+      margin-right: .25rem;
+      vertical-align: -.23em;
+      width: 1.28em;
+
+      &:before {
+        content: '';
+      }
+    }
+
+    .menu__about-icon {
+      background: url('../images/op-text-icons/straw-hat-jolly-roger.png') center / contain no-repeat;
+      display: inline-block;
+      filter: drop-shadow(0 .0625rem .0625rem rgba(0, 0, 0, .35));
+      height: 1.3em;
+      margin-right: .25rem;
+      vertical-align: -.24em;
+      width: 1.3em;
+
+      &:before {
+        content: '';
+      }
+    }
+
     &:not(.title) a {
       display: block;
-      font-size: $font-size-medium;
+      font-family: "Pirata One", "ZCOOL QingKe HuangYou", "ZCOOL KuaiLe", "Noto Serif SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+      font-size: $font-size-large;
+      font-weight: 400;
+      font-synthesis: none;
+      letter-spacing: .03rem;
+      text-shadow: 0 .0625rem .125rem rgba(0, 0, 0, .16);
 
       @extend $hover-underline;
+    }
+
+    &.title a {
+      display: block;
+      font-family: "Pirata One", "ZCOOL QingKe HuangYou", "ZCOOL KuaiLe", "Noto Serif SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+      font-size: 1.08rem;
+      font-weight: 500;
+      line-height: 1.2;
+      text-shadow: 0 .0625rem .125rem rgba(0, 0, 0, .18);
     }
 
     &.active:not(.dropdown), &:not(.dropdown):hover {
@@ -114,4 +212,15 @@
       }
     }
   }
+}
+
+#nav .menu .item.title > a.menu__site-title {
+  display: block;
+  font-family: "Pirata One", "ZCOOL QingKe HuangYou", "ZCOOL KuaiLe", "Noto Serif SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-size: 1.08rem;
+  font-weight: 400;
+  font-synthesis: none;
+  letter-spacing: .04rem;
+  line-height: 1.2;
+  text-shadow: 0 .0625rem .125rem rgba(0, 0, 0, .18);
 }

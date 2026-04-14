@@ -1,5 +1,3 @@
-/* global hexo */
-
 /*
 {% links %}
 - site: #main title
@@ -18,7 +16,7 @@
 const fs = require('fs');
 const path = require('path');
 const yaml = require('js-yaml');
-const url = require('url');
+const { isExternalUrl } = require('../utils/url');
 
 function linkGrid(args, content) {
   const theme = hexo.theme.config;
@@ -38,8 +36,6 @@ function linkGrid(args, content) {
     return
   }
 
-  const siteHost = url.parse(hexo.config.url).hostname || hexo.config.url;
-
   const list = yaml.load(content);
 
   var result = ''
@@ -47,12 +43,6 @@ function linkGrid(args, content) {
   list.forEach(item => {
     if(!item.url || !item.site) {
       return;
-    }
-
-    var urlparam = {};
-
-    if(item.url) {
-      urlparam = url.parse(item.url);
     }
 
     var item_image = item.image || theme.images + '/404.png';
@@ -65,7 +55,7 @@ function linkGrid(args, content) {
 
     result += `<div class="item" title="${item.owner || item.site}"${item.color}>`;
 
-    if (urlparam.protocol && urlparam.hostname !== siteHost) {
+    if (isExternalUrl(item.url, hexo.config.url)) {
       var durl = Buffer.from(item.url).toString('base64');
       result += `<span class="exturl image" data-url="${durl}" data-background-image="${item_image}"></span>
           <div class="info">

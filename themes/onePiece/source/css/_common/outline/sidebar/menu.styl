@@ -12,9 +12,18 @@
     the-transition();
 
     a {
+      align-items: center;
       color: inherit;
-      display: block;
-      line-height: 3;
+      display: flex;
+      font-family: "Pirata One", "ZCOOL QingKe HuangYou", "ZCOOL KuaiLe", "Noto Serif SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+      font-size: 1.25rem;
+      font-weight: 400;
+      font-synthesis: none;
+      justify-content: center;
+      letter-spacing: .03rem;
+      line-height: 1.4;
+      min-height: 3.1em;
+      text-shadow: 0 .0625rem .125rem rgba(0, 0, 0, .08);
     }
 
     .submenu {
@@ -33,7 +42,86 @@
     }
 
     .ic {
-      margin-right: .625rem;
+      font-size: 1.1em;
+      margin-right: .45rem;
+    }
+
+    .menu__home-icon {
+      background: url('../images/op-text-icons/sunny-emblem.png') center / contain no-repeat;
+      display: inline-block;
+      flex: 0 0 auto;
+      height: 1.55em;
+      margin-right: .45rem;
+      width: 1.55em;
+
+      &:before {
+        content: '';
+      }
+    }
+
+    .menu__friends-icon {
+      background: url('../images/op-text-icons/going-merry.png') center / contain no-repeat;
+      display: inline-block;
+      flex: 0 0 auto;
+      height: 1.5em;
+      margin-right: .4rem;
+      width: 1.5em;
+
+      &:before {
+        content: '';
+      }
+    }
+
+    .menu__archives-icon {
+      background: url('../images/op-text-icons/log-pose.png') center / contain no-repeat;
+      display: inline-block;
+      flex: 0 0 auto;
+      height: 1.45em;
+      margin-right: .4rem;
+      width: 1.45em;
+
+      &:before {
+        content: '';
+      }
+    }
+
+    .menu__categories-icon {
+      background: url('../images/op-text-icons/poneglyph.png') center / contain no-repeat;
+      display: inline-block;
+      flex: 0 0 auto;
+      height: 1.42em;
+      margin-right: .4rem;
+      width: 1.42em;
+
+      &:before {
+        content: '';
+      }
+    }
+
+    .menu__tags-icon {
+      background: url('../images/op-text-icons/devil-fruit-round.png') center / contain no-repeat;
+      display: inline-block;
+      flex: 0 0 auto;
+      height: 1.42em;
+      margin-right: .4rem;
+      width: 1.42em;
+
+      &:before {
+        content: '';
+      }
+    }
+
+    .menu__about-icon {
+      background: url('../images/op-text-icons/straw-hat-jolly-roger.png') center / contain no-repeat;
+      display: inline-block;
+      flex: 0 0 auto;
+      height: 1.44em;
+      margin-right: .4rem;
+      width: 1.44em;
+
+      &:before {
+        content: '';
+      }
     }
 
     &.active {

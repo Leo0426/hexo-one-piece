@@ -1,5 +1,5 @@
-var NOWPLAYING = null
-const isMobile = /mobile/i.test(window.navigator.userAgent);
+var NOWPLAYING = APP.state.nowPlaying
+const playerShared = APP.modules.playerShared;
 const mediaPlayer = function(t, config) {
   var option = {
     type: 'audio',
@@ -23,88 +23,32 @@ const mediaPlayer = function(t, config) {
         }
       }
     }
-  }, utils = {
-    random: function(len) {
-      return Math.floor((Math.random()*len))
-    },
-    parse: function(link) {
-      var result = [];
-      [
-        ['music.163.com.*song.*id=(\\d+)', 'netease', 'song'],
-        ['music.163.com.*album.*id=(\\d+)', 'netease', 'album'],
-        ['music.163.com.*artist.*id=(\\d+)', 'netease', 'artist'],
-        ['music.163.com.*playlist.*id=(\\d+)', 'netease', 'playlist'],
-        ['music.163.com.*discover/toplist.*id=(\\d+)', 'netease', 'playlist'],
-        ['y.qq.com.*song/(\\w+).html', 'tencent', 'song'],
-        ['y.qq.com.*album/(\\w+).html', 'tencent', 'album'],
-        ['y.qq.com.*singer/(\\w+).html', 'tencent', 'artist'],
-        ['y.qq.com.*playsquare/(\\w+).html', 'tencent', 'playlist'],
-        ['y.qq.com.*playlist/(\\w+).html', 'tencent', 'playlist'],
-        ['xiami.com.*song/(\\w+)', 'xiami', 'song'],
-        ['xiami.com.*album/(\\w+)', 'xiami', 'album'],
-        ['xiami.com.*artist/(\\w+)', 'xiami', 'artist'],
-        ['xiami.com.*collect/(\\w+)', 'xiami', 'playlist'],
-      ].forEach(function(rule) {
-        var patt = new RegExp(rule[0])
-        var res = patt.exec(link)
-        if (res !== null) {
-          result = [rule[1], rule[2], res[1]]
-        }
-      })
-      return result
-    },
-    fetch: function(source) {
-      var list = []
+  };
+  var dragEvents = playerShared.getDragEvents(window.navigator.userAgent);
+  var source = null;
 
-      return new Promise(function(resolve, reject) {
-        source.forEach(function(raw) {
-          var meta = utils.parse(raw)
-          if(meta[0]) {
-            var skey = JSON.stringify(meta)
-            var playlist = store.get(skey)
-            if(playlist) {
-              list.push.apply(list, JSON.parse(playlist));
-              resolve(list);
-            } else {
-              fetch('https://api.i-meto.com/meting/api?server='+meta[0]+'&type='+meta[1]+'&id='+meta[2]+'&r='+ Math.random())
-                .then(function(response) {
-                  return response.json()
-                }).then(function(json) {
-                  store.set(skey, JSON.stringify(json))
-                  list.push.apply(list, json);
-                  resolve(list);
-                }).catch(function(ex) {})
-            }
-          } else {
-            list.push(raw);
-            resolve(list);
-          }
-        })
-      })
-    },
-    secondToTime: function(second) {
-      var add0 = function(num) {
-        return isNaN(num) ? '00' : (num < 10 ? '0' + num : '' + num)
+  function resolveRawGroup(raw, index, player) {
+    if (!raw.list) {
+      player.group = false;
+      return {
+        group: 0,
+        source: [raw]
       };
-      var hour = Math.floor(second / 3600);
-      var min = Math.floor((second - hour * 3600) / 60);
-      var sec = Math.floor(second - hour * 3600 - min * 60);
-      return (hour > 0 ? [hour, min, sec] : [min, sec]).map(add0).join(':');
-    },
-    nameMap: {
-      dragStart: isMobile ? 'touchstart' : 'mousedown',
-      dragMove: isMobile ? 'touchmove' : 'mousemove',
-      dragEnd: isMobile ? 'touchend' : 'mouseup',
     }
-  }, source = null;
+
+    player.group = true;
+    return {
+      group: index,
+      source: raw.list
+    };
+  }
 
   t.player = {
-    _id: utils.random(999999),
+    _id: playerShared.randomInt(999999),
     group: true,
     // 加载播放列表
     load: function(newList) {
       var d = ""
-      var that = this
 
       if(newList && newList.length > 0) {
         if(this.options.rawList !== newList) {
@@ -134,18 +78,12 @@ const mediaPlayer = function(t, config) {
 
               that.options.rawList.forEach(function(raw, index) {
                 promises.push(new Promise(function(resolve, reject) {
-                  var group = index
-                  var source
-                  if(!raw.list) {
-                    group = 0
-                    that.group = false
-                    source = [raw]
-                  } else {
-                    that.group = true
-                    source = raw.list
-                  }
-                  utils.fetch(source).then(function(list) {
-                    playlist.add(group, list)
+                  var rawGroup = resolveRawGroup(raw, index, that);
+                  playerShared.fetchTrackList(rawGroup.source, {
+                    fetch: fetch,
+                    store: store
+                  }).then(function(list) {
+                    playlist.add(rawGroup.group, list)
                     resolve()
                   })
                 }))
@@ -175,14 +113,14 @@ const mediaPlayer = function(t, config) {
 
       var next = function() {
         var index = playlist.index + step
-        if(index > total || index < 0) {
+        if(index >= total || index < 0) {
           index = controller.step == 'next' ? 0 : total-1;
         }
         playlist.index = index;
       }
 
       var random = function() {
-        var p = utils.random(total)
+        var p = playerShared.randomInt(total)
         if(playlist.index !== p) {
           playlist.index = p
         } else {
@@ -254,7 +192,6 @@ const mediaPlayer = function(t, config) {
         this.mode();
         return;
       }
-      var that = this
       source.play().then(function() {
         playlist.scroll()
       }).catch(function(e) {});
@@ -329,13 +266,7 @@ const mediaPlayer = function(t, config) {
     add: function(group, list) {
       var that = this
       list.forEach(function(item, i) {
-        item.group = group;
-        item.name = item.name || item.title || 'Meida name';
-        item.artist = item.artist || item.author || 'Anonymous';
-        item.cover = item.cover || item.pic;
-        item.type = item.type || 'normal';
-
-        that.data.push(item);
+        that.data.push(playerShared.normalizeTrack(item, group));
       });
     },
     clear: function() {
@@ -453,7 +384,7 @@ const mediaPlayer = function(t, config) {
       }
 
       if(raw.startsWith('http'))
-        this.fetch(raw, callback)
+        playerShared.fetchLyrics(raw, fetch).then(callback)
       else
         callback(raw)
     },
@@ -468,55 +399,14 @@ const mediaPlayer = function(t, config) {
             var y = -(this.index-1);
             this.el.style.transform = 'translateY('+y+'rem)';
             this.el.style.webkitTransform = 'translateY('+y+'rem)';
-            this.el.getElementsByClassName('current')[0].removeClass('current');
-            this.el.getElementsByTagName('p')[i].addClass('current');
+            APP.dom.enhance(this.el.getElementsByClassName('current')[0]).removeClass('current');
+            APP.dom.enhance(this.el.getElementsByTagName('p')[i]).addClass('current');
           }
         }
       }
     },
     parse: function(lrc_s) {
-      if (lrc_s) {
-          lrc_s = lrc_s.replace(/([^\]^\n])\[/g, function(match, p1){return p1 + '\n['});
-          const lyric = lrc_s.split('\n');
-          var lrc = [];
-          const lyricLen = lyric.length;
-          for (var i = 0; i < lyricLen; i++) {
-              // match lrc time
-              const lrcTimes = lyric[i].match(/\[(\d{2}):(\d{2})(\.(\d{2,3}))?]/g);
-              // match lrc text
-              const lrcText = lyric[i]
-                  .replace(/.*\[(\d{2}):(\d{2})(\.(\d{2,3}))?]/g, '')
-                  .replace(/<(\d{2}):(\d{2})(\.(\d{2,3}))?>/g, '')
-                  .replace(/^\s+|\s+$/g, '');
-
-              if (lrcTimes) {
-                  // handle multiple time tag
-                  const timeLen = lrcTimes.length;
-                  for (var j = 0; j < timeLen; j++) {
-                      const oneTime = /\[(\d{2}):(\d{2})(\.(\d{2,3}))?]/.exec(lrcTimes[j]);
-                      const min2sec = oneTime[1] * 60;
-                      const sec2sec = parseInt(oneTime[2]);
-                      const msec2sec = oneTime[4] ? parseInt(oneTime[4]) / ((oneTime[4] + '').length === 2 ? 100 : 1000) : 0;
-                      const lrcTime = min2sec + sec2sec + msec2sec;
-                      lrc.push([lrcTime, lrcText]);
-                  }
-              }
-          }
-          // sort by time
-          lrc = lrc.filter(function(item){return item[1]});
-          lrc.sort(function(a, b){return a[0] - b[0]});
-          return lrc;
-      } else {
-          return [];
-      }
-    },
-    fetch: function(url, callback) {
-      fetch(url)
-          .then(function(response) {
-            return response.text()
-          }).then(function(body) {
-            callback(body)
-          }).catch(function(ex) {})
+      return playerShared.parseLyrics(lrc_s);
     }
   }
 
@@ -544,8 +434,8 @@ const mediaPlayer = function(t, config) {
       if(current) {
 
         if(this.el) {
-          this.el.parentNode.removeClass('current')
-            .removeEventListener(utils.nameMap.dragStart, this.drag)
+          APP.dom.enhance(this.el.parentNode).removeClass('current')
+            .removeEventListener(dragEvents.dragStart, this.drag)
           this.el.remove()
         }
 
@@ -553,7 +443,7 @@ const mediaPlayer = function(t, config) {
           className: 'progress'
         })
 
-        this.el.attr('data-dtime', utils.secondToTime(0))
+        this.el.attr('data-dtime', playerShared.secondToTime(0))
 
         this.bar = this.el.createChild('div', {
           className: 'bar',
@@ -561,14 +451,14 @@ const mediaPlayer = function(t, config) {
 
         current.addClass('current')
 
-        current.addEventListener(utils.nameMap.dragStart, this.drag);
+        current.addEventListener(dragEvents.dragStart, this.drag);
 
         playlist.scroll()
       }
     },
     update: function(percent) {
       this.bar.width(Math.floor(percent * 100) + '%')
-      this.el.attr('data-ptime', utils.secondToTime(percent * source.duration))
+      this.el.attr('data-ptime', playerShared.secondToTime(percent * source.duration))
     },
     seeking: function(type) {
       if(type)
@@ -595,8 +485,8 @@ const mediaPlayer = function(t, config) {
 
       var thumbUp = function(e) {
         e.preventDefault()
-        current.removeEventListener(utils.nameMap.dragEnd, thumbUp)
-        current.removeEventListener(utils.nameMap.dragMove, thumbMove)
+        current.removeEventListener(dragEvents.dragEnd, thumbUp)
+        current.removeEventListener(dragEvents.dragMove, thumbMove)
         var percentage = progress.percent(e, current)
         progress.update(percentage)
         t.player.seek(percentage * source.duration)
@@ -606,8 +496,8 @@ const mediaPlayer = function(t, config) {
 
       source.disableTimeupdate = true
       progress.seeking(true)
-      current.addEventListener(utils.nameMap.dragMove, thumbMove)
-      current.addEventListener(utils.nameMap.dragEnd, thumbUp)
+      current.addEventListener(dragEvents.dragMove, thumbMove)
+      current.addEventListener(dragEvents.dragEnd, thumbUp)
     }
   }
 
@@ -634,7 +524,7 @@ const mediaPlayer = function(t, config) {
           case 'volume':
             opt.className = ' ' + (source.muted ? 'off' : 'on')
             opt.innerHTML = '<div class="bar"></div>'
-            opt['on'+utils.nameMap.dragStart] = that.events['volume']
+            opt['on'+dragEvents.dragStart] = that.events['volume']
             opt.onclick = null
             break;
           case 'mode':
@@ -683,8 +573,8 @@ const mediaPlayer = function(t, config) {
 
         var thumbUp = function(e) {
           e.preventDefault()
-          current.removeEventListener(utils.nameMap.dragEnd, thumbUp)
-          current.removeEventListener(utils.nameMap.dragMove, thumbMove)
+          current.removeEventListener(dragEvents.dragEnd, thumbUp)
+          current.removeEventListener(dragEvents.dragMove, thumbMove)
           if(drag) {
             t.player.muted()
             t.player.volume(controller.percent(e, current))
@@ -699,8 +589,8 @@ const mediaPlayer = function(t, config) {
           }
         };
 
-        current.addEventListener(utils.nameMap.dragMove, thumbMove)
-        current.addEventListener(utils.nameMap.dragEnd, thumbUp)
+        current.addEventListener(dragEvents.dragMove, thumbMove)
+        current.addEventListener(dragEvents.dragEnd, thumbUp)
       },
       backward: function(e) {
         controller.step = 'prev'
@@ -729,21 +619,23 @@ const mediaPlayer = function(t, config) {
     },
     ondurationchange: function() {
       if (source.duration !== 1) {
-        progress.el.attr('data-dtime', utils.secondToTime(source.duration))
+        progress.el.attr('data-dtime', playerShared.secondToTime(source.duration))
       }
     },
     onloadedmetadata: function() {
       t.player.seek(0)
-      progress.el.attr('data-dtime', utils.secondToTime(source.duration))
+      progress.el.attr('data-dtime', playerShared.secondToTime(source.duration))
     },
     onplay: function() {
-      t.parentNode.addClass('playing')
+      APP.dom.enhance(t.parentNode).addClass('playing')
       showtip(this.attr('title'))
       NOWPLAYING = t
+      APP.state.nowPlaying = NOWPLAYING
     },
     onpause: function() {
-      t.parentNode.removeClass('playing')
+      APP.dom.enhance(t.parentNode).removeClass('playing')
       NOWPLAYING = null
+      APP.state.nowPlaying = NOWPLAYING
     },
     ontimeupdate: function() {
       if(!this.disableTimeupdate) {
@@ -785,7 +677,7 @@ const mediaPlayer = function(t, config) {
       return;
 
 
-    t.player.options = Object.assign(option, config);
+    t.player.options = Object.assign({}, option, config);
     t.player.options.mode = store.get('_PlayerMode') || t.player.options.mode
 
     // 初始化button、controls以及click事件
@@ -796,7 +688,7 @@ const mediaPlayer = function(t, config) {
     // 初始化播放列表、预览、控件按钮等
     info.create();
 
-    t.parentNode.addClass(t.player.options.type)
+    APP.dom.enhance(t.parentNode).addClass(t.player.options.type)
 
     t.player.created = true;
   }
@@ -805,3 +697,7 @@ const mediaPlayer = function(t, config) {
 
   return t;
 }
+
+APP.register('player', {
+  mediaPlayer: mediaPlayer
+});

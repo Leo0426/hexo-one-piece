@@ -14,6 +14,8 @@
 
 main {
   background: linear-gradient(to top, var(--body-bg-shadow) 0, var(--grey-1) 20%) no-repeat bottom;
+  position: relative;
+  z-index: 1;
 
   >.inner {
     width: $content-desktop;
@@ -36,12 +38,25 @@ main {
 }
 
 #main {
-  background: linear-gradient(to top, var(--grey-0) 0, var(--grey-1) 20%) no-repeat top;
-  box-shadow: 0rem 1.25rem 1rem .3125rem var(--body-bg-shadow);
+  background: linear-gradient(to top, var(--body-bg-shadow) 0, var(--grey-1) 20%) no-repeat top;
+  box-shadow: none;
+  margin-bottom: -1px;
+  position: relative;
 
   width: $content-wrap;
 
   min-height: 37.5rem;
+
+  &::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    height: 2px;
+    background: var(--body-bg-shadow);
+    pointer-events: none;
+  }
 
   .cat {
     margin-top: 10rem;

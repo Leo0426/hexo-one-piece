@@ -1,0 +1,109 @@
+// ─── One Piece Icon Sprite ────────────────────────────────────────────────────
+//
+// 精灵图布局 (3×3 grid，文件: /images/op-icons.png)
+//
+//   (0,0) 草帽       (0,1) 骷髅旗     (0,2) 藏宝图
+//   (1,0) 肉         (1,1) 恶魔果实   (1,2) 宝箱(关)
+//   (2,0) 炮弹       (2,1) 宝箱(开)   (2,2) 船舵
+//
+// background-size: 300% 300%
+// background-position x = col * 50%，y = row * 50%
+// ─────────────────────────────────────────────────────────────────────────────
+
+op-sprite(col, row)
+  content: '' !important
+  display: inline-block
+  width: 1.1em
+  height: 1.1em
+  background-image: url('../images/op-icons.png')
+  background-size: 300% 300%
+  background-position: (col * 50%) (row * 50%)
+  background-repeat: no-repeat
+  vertical-align: -0.2em
+
+op-tab-icon()
+  content: '' !important
+  display: inline-block
+  width: 1.2em
+  height: 1.2em
+  vertical-align: -0.24em
+
+op-tab-sprite(col, row)
+  op-tab-icon()
+  background-image: url('../images/op-icons.png')
+  background-size: 300% 300%
+  background-position: (col * 50%) (row * 50%)
+  background-repeat: no-repeat
+
+// ─── 船舵 → Home ─────────────────────────────────────────────────────────────
+.i-home::before
+  op-sprite(2, 2)
+
+// ─── 骷髅旗 → 分类 Flag ───────────────────────────────────────────────────────
+.i-flag::before
+  op-sprite(1, 0)
+
+// ─── 藏宝图 → Sitemap / Tags ──────────────────────────────────────────────────
+.i-sitemap::before
+  op-sprite(2, 0)
+
+.i-tags::before
+  op-sprite(2, 0)
+
+// ─── 肉 → Coffee (阅读时间) ──────────────────────────────────────────────────
+.i-coffee::before
+  op-sprite(0, 1)
+
+// ─── 恶魔果实 → Magic ────────────────────────────────────────────────────────
+.i-magic::before
+  op-sprite(1, 1)
+
+// ─── 宝箱(关) → Archive ──────────────────────────────────────────────────────
+.i-archive::before
+  op-sprite(2, 1)
+
+// ─── 炮弹 → Thumbtack (置顶) ─────────────────────────────────────────────────
+.i-thumbtack::before
+  op-sprite(0, 2)
+
+// ─── 宝箱(开) → File (文章) ──────────────────────────────────────────────────
+.i-file::before
+  op-sprite(1, 2)
+
+// ─── 草帽 → Star (精选) ──────────────────────────────────────────────────────
+.i-star::before
+  op-sprite(0, 0)
+
+// ─── 藏宝图 → Tag (单个标签) / Search (寻宝 = 搜索) ─────────────────────────
+.i-tag::before
+  op-sprite(2, 0)
+
+.i-search::before
+  op-sprite(2, 0)
+
+// ─── 恶魔果实 → Heart (喜欢) ────────────────────────────────────────────────
+.i-heart::before
+  op-sprite(1, 1)
+
+.i-heartbeat::before
+  op-sprite(1, 1)
+
+// ─── 草帽 → Sun (光明/白天主题) ─────────────────────────────────────────────
+.i-sun::before
+  op-sprite(0, 0)
+
+// ─── Sidebar Tab 单独覆盖 ─────────────────────────────────────────────────────
+// tab.styl 用 @extend 在编译期复制了原始字体内容，需在此直接强制覆盖
+
+// overview 标签 → poneglyph
+#sidebar .tab .item.overview::before
+  op-tab-icon()
+  background: url('../images/op-text-icons/poneglyph.png') center / contain no-repeat
+
+// related 标签 → 藏宝图
+#sidebar .tab .item.related::before
+  op-tab-sprite(2, 0)
+
+// contents 标签 → 宝箱(开) (目录 = 打开宝箱看内容)
+#sidebar .tab .item.contents::before
+  op-tab-sprite(1, 2)

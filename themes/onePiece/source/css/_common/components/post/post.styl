@@ -1,5 +1,16 @@
 .post.block {
-  padding: 0 2rem;
+  padding: 0 2rem 1.5rem;
+
+  +mobile() {
+    padding: 0 1.25rem 1rem;
+  }
+
+  .body.md {
+    max-width: 52rem;
+    margin: 0 auto;
+    font-size: 1.0625rem;
+    line-height: 1.95;
+  }
 }
 
 .md {

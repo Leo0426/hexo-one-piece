@@ -76,7 +76,7 @@ const postFancybox = function(p) {
       var q = jQuery.noConflict();
 
       $.each(p + ' p.gallery', function(element) {
-        var box = document.createElement('div');
+        var box = APP.dom.createElement('div');
         box.className = 'gallery';
         box.attr('data-height', element.attr('data-height')||220);
 
@@ -99,9 +99,10 @@ const postFancybox = function(p) {
             captionClass = 'jg-caption'
           }
         }
-        if(info = element.attr('title')) {
+        info = element.attr('title');
+        if(info) {
           $imageWrapLink.attr('data-caption', info);
-          var para = document.createElement('span');
+          var para = APP.dom.createElement('span');
           var txt = document.createTextNode(info);
           para.appendChild(txt);
           para.addClass(captionClass);
@@ -112,7 +113,7 @@ const postFancybox = function(p) {
       $.each(p + ' div.gallery', function (el, i) {
         q(el).justifiedGallery({rowHeight: q(el).data('height')||120, rel: 'gallery-' + i}).on('jg.complete', function () {
           q(this).find('a').each(function(k, ele) {
-            ele.attr('data-fancybox', 'gallery-' + i);
+            APP.dom.enhance(ele).attr('data-fancybox', 'gallery-' + i);
           });
         });
       });
@@ -152,7 +153,7 @@ const postBeauty = function () {
       var author = "# " + copyright.child('.author').innerText
       var link = "# " + copyright.child('.link').innerText
       var license = "# " + copyright.child('.license').innerText
-      var htmlData = author + "<br>" + link + "<br>" + license + "<br><br>" + window.getSelection().toString().replace(/\r\n/g, "<br>");;
+      var htmlData = author + "<br>" + link + "<br>" + license + "<br><br>" + window.getSelection().toString().replace(/\r\n/g, "<br>");
       var textData = author + "\n" + link + "\n" + license + "\n\n" + window.getSelection().toString().replace(/\r\n/g, "\n");
       if (event.clipboardData) {
           event.clipboardData.setData("text/html", htmlData);
@@ -164,9 +165,9 @@ const postBeauty = function () {
   }
 
   $.each('li ruby', function(element) {
-    var parent = element.parentNode;
+    var parent = APP.dom.enhance(element.parentNode);
     if(element.parentNode.tagName != 'LI') {
-      parent = element.parentNode.parentNode;
+      parent = APP.dom.enhance(element.parentNode.parentNode);
     }
     parent.addClass('ruby');
   })
@@ -237,7 +238,6 @@ const postBeauty = function () {
       fullscreenBtn.child('.ic').className = 'ic i-expand';
     }
     var fullscreenHandle = function(event) {
-      var target = event.currentTarget;
       if (element.hasClass('fullscreen')) {
         removeFullscreen();
         hideCode && hideCode();
@@ -303,7 +303,7 @@ const postBeauty = function () {
     element.addEventListener('click', function (event) {
       if (element.hasClass('correct')) {
         element.toggleClass('right')
-        element.parentNode.parentNode.addClass('show')
+        APP.dom.enhance(element.parentNode.parentNode).addClass('show')
       } else {
         element.toggleClass('wrong')
       }
@@ -312,12 +312,12 @@ const postBeauty = function () {
 
   $.each('.quiz > p', function (element) {
     element.addEventListener('click', function (event) {
-      element.parentNode.toggleClass('show')
+      APP.dom.enhance(element.parentNode).toggleClass('show')
     });
   });
 
   $.each('.quiz > p:first-child', function (element) {
-    var quiz = element.parentNode;
+    var quiz = APP.dom.enhance(element.parentNode);
     var type = 'choice'
     if(quiz.hasClass('true') || quiz.hasClass('false'))
       type = 'true_false'
@@ -358,7 +358,7 @@ const tabFormat = function() {
     var title = element.attr('data-title');
     var box = $('#' + id);
     if(!box) {
-      box = document.createElement('div');
+      box = APP.dom.createElement('div');
       box.className = 'tabs';
       box.id = id;
       box.innerHTML = '<div class="show-btn"></div>'
@@ -407,16 +407,24 @@ const tabFormat = function() {
 
 const loadComments = function () {
   var element = $('#comments');
-  if (!element) {
+  var commentsEnabled = hasValineCredentials();
+
+  if (!element || !commentsEnabled) {
     goToComment.display("none")
+
+    if (element && !commentsEnabled && !element.dataset.commentsDisabled) {
+      element.dataset.commentsDisabled = 'true';
+      element.innerHTML = '<div class="comments-disabled">评论功能暂未开启</div>';
+    }
+
     return;
   } else {
     goToComment.display("")
   }
 
-  if (!window.IntersectionObserver) {
-    vendorCss('valine');
-  } else {
+    if (!window.IntersectionObserver) {
+      vendorCss('valine');
+    } else {
     var io = new IntersectionObserver(function(entries, observer) {
       var entry = entries[0];
       vendorCss('valine');
@@ -431,14 +439,153 @@ const loadComments = function () {
 }
 
 const algoliaSearch = function(pjax) {
-  if(CONFIG.search === null)
-    return
+  var hasAlgolia = CONFIG.search && CONFIG.search.appID && CONFIG.search.apiKey && CONFIG.search.indexName;
 
-  if(!siteSearch) {
-    siteSearch = BODY.createChild('div', {
-      id: 'search',
-      innerHTML: '<div class="inner"><div class="header"><span class="icon"><i class="ic i-search"></i></span><div class="search-input-container"></div><span class="close-btn"><i class="ic i-times-circle"></i></span></div><div class="results"><div class="inner"><div id="search-stats"></div><div id="search-hits"></div><div id="search-pagination"></div></div></div></div>'
+  var ensureSearch = function() {
+    if(!siteSearch) {
+      siteSearch = BODY.createChild('div', {
+        id: 'search',
+        innerHTML: '<div class="inner"><div class="header"><span class="icon"><i class="ic i-search"></i></span><div class="search-input-container"></div><span class="close-btn"><i class="ic i-times-circle"></i></span></div><div class="results"><div class="inner"><div id="search-stats"></div><div id="search-hits"></div><div id="search-pagination"></div></div></div></div>'
+      });
+    }
+
+    return siteSearch;
+  }
+
+  var escapeHTML = function(text) {
+    return String(text || '').replace(/[&<>"']/g, function(ch) {
+      return {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+      }[ch];
     });
+  }
+
+  var postURL = function(path) {
+    path = String(path || '').replace(/^\/+/, '');
+    var root = CONFIG.root || '/';
+    if(root.charAt(root.length - 1) !== '/')
+      root += '/';
+    return root + path;
+  }
+
+  var searchStats = function(hits, time) {
+    return LOCAL.search.stats
+      .replace(/\$\{hits}/, hits)
+      .replace(/\$\{time}/, time);
+  }
+
+  var highlightTitle = function(title, query) {
+    title = String(title || '');
+    query = String(query || '').trim();
+
+    if(!query)
+      return escapeHTML(title);
+
+    var index = title.toLowerCase().indexOf(query.toLowerCase());
+    if(index < 0)
+      return escapeHTML(title);
+
+    return escapeHTML(title.slice(0, index)) +
+      '<mark>' + escapeHTML(title.slice(index, index + query.length)) + '</mark>' +
+      escapeHTML(title.slice(index + query.length));
+  }
+
+  var renderLocalSearch = function(query) {
+    var start = Date.now();
+    var value = String(query || '').trim();
+    var stats = $('#search-stats');
+    var hits = $('#search-hits');
+    var pagination = $('#search-pagination');
+
+    pagination.innerHTML = '';
+
+    if(!value) {
+      stats.innerHTML = '';
+      hits.innerHTML = '';
+      return;
+    }
+
+    var valueLower = value.toLowerCase();
+    var posts = CONFIG.searchLocal || [];
+    var results = posts.filter(function(post) {
+      return String(post.title || '').toLowerCase().indexOf(valueLower) > -1;
+    });
+    var elapsed = Date.now() - start;
+
+    if(!results.length) {
+      stats.innerHTML = '';
+      hits.innerHTML = '<div id="hits-empty">' + LOCAL.search.empty.replace(/\$\{query}/, function() {
+        return escapeHTML(value);
+      }) + '</div>';
+      return;
+    }
+
+    stats.innerHTML = searchStats(results.length, elapsed) + '<hr>';
+    hits.innerHTML = '<ol>' + results.map(function(post) {
+      var cats = post.categories && post.categories.length ? '<span>' + post.categories.map(escapeHTML).join('<i class="ic i-angle-right"></i>') + '</span>' : '';
+      return '<li class="item"><a href="' + escapeHTML(postURL(post.path)) + '">' + cats + highlightTitle(post.title, value) + '</a></li>';
+    }).join('') + '</ol>';
+
+    pjax && pjax.refresh && pjax.refresh(hits);
+  }
+
+  var bindPopup = function() {
+    $.each('.search', function(element) {
+      if(element.attr('data-search-ready'))
+        return;
+
+      element.attr('data-search-ready', true);
+      element.addEventListener('click', function() {
+        document.body.style.overflow = 'hidden';
+        transition(siteSearch, 'shrinkIn', function() {
+            var input = $('.search-input');
+            if(input) {
+              input.focus();
+              if(!hasAlgolia)
+                renderLocalSearch(input.value);
+            }
+          }) // transition.shrinkIn
+      });
+    });
+
+    if(siteSearch.attr('data-popup-ready'))
+      return;
+
+    siteSearch.attr('data-popup-ready', true);
+
+    // Monitor main search box
+    const onPopupClose = function() {
+      document.body.style.overflow = '';
+      transition(siteSearch, 0); // "transition.shrinkOut"
+    };
+
+    siteSearch.addEventListener('click', function(event) {
+      if (event.target === siteSearch) {
+        onPopupClose();
+      }
+    });
+    $('.close-btn').addEventListener('click', onPopupClose);
+    window.addEventListener('pjax:success', onPopupClose);
+    window.addEventListener('keyup', function(event) {
+      if (event.key === 'Escape') {
+        onPopupClose();
+      }
+    });
+  }
+
+  ensureSearch();
+
+  if(!hasAlgolia) {
+    $('.search-input-container').innerHTML = '<input class="search-input" type="search" autocomplete="off" spellcheck="false" placeholder="' + escapeHTML(LOCAL.search.placeholder) + '">';
+    $('.search-input').addEventListener('input', function(event) {
+      renderLocalSearch(event.target.value);
+    });
+    bindPopup();
+    return;
   }
 
   var search = instantsearch({
@@ -478,9 +625,7 @@ const algoliaSearch = function(pjax) {
       container: '#search-stats',
       templates: {
         text: function(data) {
-          var stats = LOCAL.search.stats
-            .replace(/\$\{hits}/, data.nbHits)
-            .replace(/\$\{time}/, data.processingTimeMS);
+          var stats = searchStats(data.nbHits, data.processingTimeMS);
           return stats + '<span class="algolia-powered"></span><hr>';
         }
       }
@@ -526,33 +671,15 @@ const algoliaSearch = function(pjax) {
   ]);
 
   search.start();
+  bindPopup();
+};
 
-  // Handle and trigger popup window
-  $.each('.search', function(element) {
-    element.addEventListener('click', function() {
-      document.body.style.overflow = 'hidden';
-      transition(siteSearch, 'shrinkIn', function() {
-          $('.search-input').focus();
-        }) // transition.shrinkIn
-    });
-  });
-
-  // Monitor main search box
-  const onPopupClose = function() {
-    document.body.style.overflow = '';
-    transition(siteSearch, 0); // "transition.shrinkOut"
-  };
-
-  siteSearch.addEventListener('click', function(event) {
-    if (event.target === siteSearch) {
-      onPopupClose();
-    }
-  });
-  $('.close-btn').addEventListener('click', onPopupClose);
-  window.addEventListener('pjax:success', onPopupClose);
-  window.addEventListener('keyup', function(event) {
-    if (event.key === 'Escape') {
-      onPopupClose();
-    }
-  });
-}
+APP.register('page', {
+  algoliaSearch: algoliaSearch,
+  cardActive: cardActive,
+  loadComments: loadComments,
+  postFancybox: postFancybox,
+  postBeauty: postBeauty,
+  registerExtURL: registerExtURL,
+  tabFormat: tabFormat
+});

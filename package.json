@@ -1,28 +1,71 @@
 {
-  "name": "hexo-site",
-  "version": "0.0.0",
+  "name": "hexo-one-piece",
+  "version": "1.0.0",
+  "description": "A Hexo blog template with One Piece theme",
   "private": true,
+  "author": "Leo Lu",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Leo0426/hexo-one-piece.git"
+  },
+  "keywords": [
+    "hexo",
+    "blog",
+    "one-piece",
+    "theme"
+  ],
   "scripts": {
-    "build": "hexo generate",
+    "dev": "hexo server --debug",
+    "build": "hexo clean && hexo generate && postcss \"public/css/*.css\" --replace",
+    "lint": "eslint \"themes/onePiece/source/js/_app/*.js\" \"themes/onePiece/scripts/**/*.js\"",
+    "check": "yarn lint && yarn build",
+    "test:unit": "node --test tests/unit/*.test.js",
+    "test:smoke": "playwright install chromium && yarn run build && playwright test",
+    "check:full": "yarn run check && yarn run test:unit && yarn run test:smoke",
     "clean": "hexo clean",
     "deploy": "hexo deploy",
-    "server": "hexo server"
+    "server": "hexo server",
+    "start": "hexo server",
+    "preview": "hexo server --draft",
+    "new": "hexo new"
   },
   "hexo": {
-    "version": "6.1.0"
+    "version": "7.3.0"
   },
   "dependencies": {
-    "hexo": "^6.0.0",
-    "hexo-generator-archive": "^1.0.0",
-    "hexo-generator-category": "^1.0.0",
-    "hexo-generator-index": "^2.0.0",
-    "hexo-generator-tag": "^1.0.0",
+    "hexo": "^7.3.0",
+    "hexo-feed": "^1.1.2",
+    "hexo-generator-archive": "^2.0.0",
+    "hexo-generator-category": "^2.0.0",
+    "hexo-generator-index": "^4.0.0",
+    "hexo-generator-tag": "^2.0.0",
     "hexo-renderer-ejs": "^2.0.0",
-    "hexo-renderer-multi-markdown-it": "^0.1.5",
-    "hexo-renderer-stylus": "^2.0.0",
-    "hexo-server": "^3.0.0"
+    "hexo-renderer-multi-markdown-it": "file:packages/hexo-renderer-multi-markdown-it",
+    "hexo-renderer-stylus": "^3.0.1",
+    "hexo-server": "^3.0.0",
+    "hexo-symbols-count-time": "file:packages/hexo-symbols-count-time"
   },
+  "devDependencies": {
+    "@playwright/test": "^1.59.1",
+    "autoprefixer": "^10.4.27",
+    "cross-env": "^7.0.3",
+    "eslint": "^8.57.1",
+    "postcss": "^8.5.9",
+    "postcss-cli": "^11.0.1"
+  },
+  "packageManager": "yarn@1.22.22",
   "resolutions": {
-    "stylus": "^0.54.8"
+    "eslint/**/minimatch": "3.1.5",
+    "eslint/**/brace-expansion": "1.1.13",
+    "hexo/**/picomatch": "2.3.2",
+    "hexo-renderer-multi-markdown-it/**/markdown-it": "14.1.1",
+    "hexo-renderer-stylus/**/minimatch": "3.1.5",
+    "hexo-renderer-stylus/**/brace-expansion": "1.1.13",
+    "stylus": "^0.63.0"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "yarn": ">=1.22.0"
   }
 }

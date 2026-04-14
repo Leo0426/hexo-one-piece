@@ -9,8 +9,7 @@ copyright: false
 - 站名： Hey One Piece
 - 站长： Leo Lu
 - 地址： https://heyonepiece.com
-- 标志： ![Hey One Piece](https://tva2.sinaimg.cn/large/aff02bd7ly8h0ulx2mtvfj20b40b4wf6.jpg){height="100" width="100"}
-- 简介： Leo的个人技术栈梳理，有关java语言，编程原理，DevOps，安全，动漫和其他
+- 简介： Leo的个人技术栈笔记，有关AI、java、python语言，编程原理，DevOps，安全，动漫和其他
 
 # 申请方法
 - 添加本站后，在本页留言，格式如下

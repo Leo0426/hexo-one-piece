@@ -1,68 +1,29 @@
 'use strict';
 const fs = require('hexo-fs');
-const url = require('url');
+const { buildClientConfig } = require('../builders/client_config');
 
 
 hexo.extend.generator.register('script', function(locals){
   const config = hexo.config;
   const theme = hexo.theme.config;
 
-  var env = require('../../package.json')
-
-  var siteConfig = {
-    version: env['version'],
-    hostname: config.url,
-    root: config.root,
-    statics: theme.statics,
-    favicon: {
-      normal: theme.images + "/favicon.ico",
-      hidden: theme.images + "/failure.ico"
-    },
-    darkmode: theme.darkmode,
-    auto_scroll: theme.auto_scroll,
-    js: {
-      valine: theme.vendors.js.valine,
-      chart: theme.vendors.js.chart,
-      copy_tex: theme.vendors.js.copy_tex,
-      fancybox: theme.vendors.js.fancybox
-    },
-    css: {
-      valine: theme.css + "/comment.css",
-      katex: theme.vendors.css.katex,
-      mermaid: theme.css + "/mermaid.css",
-      fancybox: theme.vendors.css.fancybox
-    },
-    loader: theme.loader,
-    search : null,
-    valine: theme.valine,
-    quicklink: {
-      timeout : theme.quicklink.timeout,
-      priority: theme.quicklink.priority
-    }
-  };
-
-  if(config.algolia) {
-    siteConfig.search = {
-      appID    : config.algolia.appId,
-      apiKey   : config.algolia.apiKey,
-      indexName: config.algolia.indexName,
-      hits     : theme.search.hits
-    }
-  }
-
-  if(theme.audio) {
-    siteConfig.audio = theme.audio
-  }
+  var env = require('../../package.json');
+  var siteConfig = buildClientConfig({
+    hexoConfig: config,
+    themeConfig: theme,
+    version: env.version,
+    posts: locals.posts
+  });
 
   var text = '';
 
-  ['utils', 'dom', 'player', 'global', 'sidebar', 'page', 'pjax'].forEach(function(item) {
+  ['runtime', 'dom', 'utils', 'player_shared', 'player', 'global', 'sidebar', 'page', 'pjax'].forEach(function(item) {
     text += fs.readFileSync('themes/onePiece/source/js/_app/'+item+'.js').toString();
   });
 
   if(theme.fireworks && theme.fireworks.enable) {
     text += fs.readFileSync('themes/onePiece/source/js/_app/fireworks.js').toString();
-    siteConfig.fireworks = theme.fireworks.color || ["rgba(255,182,185,.9)", "rgba(250,227,217,.9)", "rgba(187,222,214,.9)", "rgba(138,198,209,.9)"]
+    siteConfig.fireworks = theme.fireworks.color || ["rgba(217,45,32,.92)", "rgba(246,196,69,.95)", "rgba(0,166,200,.9)", "rgba(22,119,199,.82)", "rgba(255,255,255,.9)"]
   }
 
   text = 'var CONFIG = ' + JSON.stringify(siteConfig) + ';' + text;
