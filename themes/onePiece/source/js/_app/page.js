@@ -131,12 +131,54 @@ const postFancybox = function(p) {
   }
 }
 
+const renderMermaid = function() {
+  if (!LOCAL.mermaid) {
+    return;
+  }
+
+  var nodes = document.querySelectorAll('.md pre.mermaid:not([data-processed])');
+  if (!nodes.length) {
+    return;
+  }
+
+  vendorCss('mermaid');
+  vendorJs('mermaid', function() {
+    var mermaid = window.mermaid;
+    if (!mermaid) {
+      return;
+    }
+
+    if (!APP.state.mermaidInitialized) {
+      mermaid.initialize({
+        startOnLoad: false,
+        theme: 'default',
+        flowchart: {
+          htmlLabels: false,
+          useMaxWidth: true
+        }
+      });
+      APP.state.mermaidInitialized = true;
+    }
+
+    Promise.resolve(mermaid.run({
+      nodes: nodes
+    })).then(function() {
+      $.each('pre.mermaid > svg', function (element) {
+        element.style.maxWidth = '';
+      });
+    }).catch(function(error) {
+      console.error('Failed to render Mermaid diagram:', error);
+    });
+  }, window.mermaid);
+}
+
 const postBeauty = function () {
   loadComments();
 
   if(!$('.md'))
     return
 
+  renderMermaid();
   postFancybox('.post.block');
 
   $('.post.block').oncopy = function(event) {
@@ -278,10 +320,6 @@ const postBeauty = function () {
         }
       });
     }
-  });
-
-  $.each('pre.mermaid > svg', function (element) {
-    element.style.maxWidth = ''
   });
 
   $.each('.reward button', function (element) {
@@ -680,6 +718,7 @@ APP.register('page', {
   loadComments: loadComments,
   postFancybox: postFancybox,
   postBeauty: postBeauty,
+  renderMermaid: renderMermaid,
   registerExtURL: registerExtURL,
   tabFormat: tabFormat
 });

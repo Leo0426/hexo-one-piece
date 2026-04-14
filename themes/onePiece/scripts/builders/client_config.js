@@ -59,7 +59,8 @@ function buildClientConfig(options) {
       valine: themeConfig.vendors.js.valine,
       chart: themeConfig.vendors.js.chart,
       copy_tex: themeConfig.vendors.js.copy_tex,
-      fancybox: themeConfig.vendors.js.fancybox
+      fancybox: themeConfig.vendors.js.fancybox,
+      mermaid: themeConfig.vendors.js.mermaid
     },
     css: {
       valine: `${themeConfig.css}/comment.css`,

@@ -1,6 +1,7 @@
 const { test, expect } = require('@playwright/test');
 
 const homePath = '/';
+const mermaidPostPath = '/2026/04/09/2026-4/how-the-economic-machine-works/';
 
 const clearStoredTheme = async page => {
   await page.addInitScript(() => {
@@ -159,6 +160,12 @@ test.describe('homepage smoke', () => {
 
     await expect(page.locator('#comments .comments-disabled')).toBeVisible();
     await expect(page.locator('#comments .comments-disabled')).toContainText('评论功能暂未开启');
+  });
+
+  test('post page renders Mermaid mindmap when enabled', async ({ page }) => {
+    await page.goto(mermaidPostPath, { waitUntil: 'networkidle' });
+
+    await expect(page.locator('pre.mermaid svg.mindmapDiagram')).toBeVisible();
   });
 
   test('pjax navigation keeps sidebar and menu state consistent', async ({ page }) => {

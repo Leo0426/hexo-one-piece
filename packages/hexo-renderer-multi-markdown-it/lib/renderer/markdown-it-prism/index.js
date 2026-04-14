@@ -6,6 +6,8 @@ const { escapeHTML, unescapeHTML } = require('hexo-util');
 const escapeSwigTag = str => str.replace(/{/g, '&#123;').replace(/}/g, '&#125;');
 const unescapeSwigTag =  str => str.replace(/&#123;/g, '{').replace(/&#125;/g, '}');
 
+const MERMAID_BLOCK_PATTERN = /^(?:flowchart|graph|sequenceDiagram|classDiagram|stateDiagram(?:-v2)?|erDiagram|journey|gantt|pie|gitGraph|mindmap|timeline|quadrantChart|requirementDiagram|zenuml|sankey(?:-beta)?|xychart(?:-beta)?|block-beta|packet-beta|kanban|architecture-beta|radar(?:-beta)?|treemap(?:-beta)?|venn|tree)\b/;
+
 loadLanguages.silent = true;
 
 /**
@@ -53,6 +55,16 @@ module.exports = function (md, options) {
         const text = token.content.trim()
         const lang = info.trim().split(" ")[0]
         var code = null
+
+        const isMermaid = lang === 'mermaid' || (lang === 'plaintext' && MERMAID_BLOCK_PATTERN.test(text));
+        if (isMermaid) {
+            let mermaidClass = '';
+            const firstLine = text.split('\n')[0].trim();
+            if (firstLine.match(/^graph (?:TB|BT|RL|LR|TD);?$/)) {
+                mermaidClass = ' graph';
+            }
+            return `<pre class="mermaid${mermaidClass}">${md.utils.escapeHtml(text)}</pre>`;
+        }
 
         let [langToUse, langShow, prismLang] = selectLanguage(config, lang);
 
